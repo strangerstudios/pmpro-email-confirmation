@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: PMPro Email Confirmation
+Plugin Name: Paid Memberships Pro - Email Confirmation Add On
 Plugin URI: http://www.paidmembershipspro.com/addons/pmpro-email-confirmation/
 Description: Require email confirmation before certain levels are enabled for members.
-Version: .1.1
+Version: .2
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -12,10 +12,53 @@ Author URI: http://www.strangerstudios.com
 */
 
 /*
-	Set this array to the include the levels which should require email confirmation.
+	[Deprecated] Set this array to the include the levels which should require email confirmation.
+
+	global $pmpro_email_confirmation_levels;
+	$pmpro_email_confirmation_levels = array(6);
+	
+	Use the checkbox on the edit levels page instead.
 */
-global $pmpro_email_confirmation_levels;
-$pmpro_email_confirmation_levels = array(1);
+
+/*
+	Add checkbox to edit level page to set if level requires email confirmation.
+*/
+//show the checkbox on the edit level page
+function pmproec_pmpro_membership_level_after_other_settings()
+{	
+	$level_id = intval($_REQUEST['edit']);
+	if($level_id > 0)
+		$email_confirmation = get_option('pmproec_email_confirmation_' . $level_id);	
+	else
+		$email_confirmation = false;
+?>
+<h3 class="topborder">Email Confirmation</h3>
+<table>
+<tbody class="form-table">
+	<tr>
+		<th scope="row" valign="top"><label for="email_confirmation"><?php _e('Email Confirmation:', 'pmpro');?></label></th>
+		<td>
+			<input type="checkbox" id="email_confirmation" name="email_confirmation" value="1" <?php checked($email_confirmation, 1);?> />
+			<label for="email_confirmation"><?php _e('Check this to require email validation for this level.', 'pmpro');?></label>
+		</td>
+	</tr>
+</tbody>
+</table>
+<?php
+}
+add_action('pmpro_membership_level_after_other_settings', 'pmproec_pmpro_membership_level_after_other_settings');
+
+//save email_confirmation setting when the level is saved/added
+function pmproec_pmpro_save_membership_level($level_id)
+{
+	if(isset($_REQUEST['email_confirmation']))
+		$email_confirmation = intval($_REQUEST['email_confirmation']);
+	else
+		$email_confirmation = 0;
+	delete_option('pmproec_email_confirmation_' . $level_id);
+	add_option('pmproec_email_confirmation_' . $level_id, $email_confirmation, '', 'no');
+}
+add_action("pmpro_save_membership_level", "pmproec_pmpro_save_membership_level");
 
 /*
 	Functions
@@ -24,8 +67,12 @@ $pmpro_email_confirmation_levels = array(1);
 function pmproec_isEmailConfirmationLevel($level_id)
 {
 	global $pmpro_email_confirmation_levels;
-		
-	return in_array($level_id, $pmpro_email_confirmation_levels);		
+
+	//get value from options
+	$email_confirmation = get_option('pmproec_email_confirmation_' . $level_id, false);	
+	
+	//check option and global var
+	return (!empty($email_confirmation) || in_array($level_id, $pmpro_email_confirmation_levels));
 }
 
 //generate a key from a user id
@@ -156,3 +203,107 @@ function pmproec_pmpro_confirmation_message($message)
 	return $message;
 }
 add_filter("pmpro_confirmation_message", "pmproec_pmpro_confirmation_message");
+
+/*
+Function to add links to the plugin row meta
+*/
+function pmproec_plugin_row_meta($links, $file) {
+	if(strpos($file, 'pmpro-email-confirmation.php') !== false)
+	{
+		$new_links = array(
+			'<a href="' . esc_url('http://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
+		);
+		$links = array_merge($links, $new_links);
+	}
+	return $links;
+}
+add_filter('plugin_row_meta', 'pmproec_plugin_row_meta', 10, 2);
+
+/**
+ * Add link to the user action links to validate a user
+ *
+ * Use the pmproec_validate_user_cap filter to change the capability required to see this.
+ */	
+function pmproec_user_row_actions($actions, $user) {	
+	$cap = apply_filters('pmproec_validate_user_cap', 'edit_users');
+	if(current_user_can($cap))
+	{
+		//check if they still have a validation key
+		$validation_key = get_user_meta($user->ID, "pmpro_email_confirmation_key", true);		
+		if(!empty($validation_key) && $validation_key != "validated")
+		{		
+			$url = admin_url("users.php?pmproecvalidate=" . $user->ID);
+			if(!empty($_REQUEST['s']))
+				$url .= "&s=" . esc_attr($_REQUEST['s']);
+			if(!empty($_REQUEST['paged']))
+				$url .= "&paged=" . intval($_REQUEST['paged']);
+			$url = wp_nonce_url($url, 'pmproecvalidate_' . $user->ID);
+			$actions[] = '<a href="' . $url . '">Validate User</a>';
+		}
+		else
+			$actions[] = 'Validated';
+	}
+	
+	return $actions;
+}
+add_filter('user_row_actions', 'pmproec_user_row_actions', 10, 2);
+add_filter('pmpro_memberslist_user_row_actions', 'pmproec_user_row_actions', 10, 2);
+
+/**
+ * Manually validate a user. Runs on admin init. Checks for pmproecvalidate and nonce and validates that user.
+ *	 
+ */	
+function pmproec_validate_user()
+{
+	if(!empty($_REQUEST['pmproecvalidate']))
+	{
+		global $pmproec_msg, $pmproec_msgt;
+		
+		//get user id
+		$user_id = intval($_REQUEST['pmproecvalidate']);
+		$user = get_userdata($user_id);
+					
+		//no user?
+		if(empty($user))
+		{
+			//user not found error
+			$pmproec_msg = 'Could not reset sessions. User not found.';
+			$pmproec_msgt = 'error';
+		}			
+		else
+		{				
+			//check nonce
+			check_admin_referer( 'pmproecvalidate_'.$user_id);
+			
+			//check caps
+			$cap = apply_filters('pmproec_validate_user_cap', 'edit_users');
+			if(!current_user_can($cap))
+			{
+				//show error message
+				$pmproec_msg = 'You do not have permission to validate users.';
+				$pmproec_msgt = 'error';
+			}
+			else
+			{				
+				//validate!
+				update_user_meta($user_id, "pmpro_email_confirmation_key", "validated");
+				
+				//show success message
+				$pmproec_msg = $user->user_email . ' has been validated.';
+				$pmproec_msgt = 'updated';
+			}
+		}						
+	}
+}
+add_action('admin_init', 'pmproec_validate_user');
+
+/**
+ * Show any messages generated by PMPro Email Confirmations
+ */	
+function pmproec_admin_notices() 
+{
+	global $pmproec_msg, $pmproec_msgt;
+	if(!empty($pmproec_msg))
+		echo "<div class=\"$pmproec_msgt\"><p>$pmproec_msg</p></div>"; 
+}
+add_action('admin_notices', 'pmproec_admin_notices');
