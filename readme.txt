@@ -23,6 +23,7 @@ Addon for Paid Memberships Pro that will include a validation link in the confir
   
 == Changelog ==
 = .2 =
+* Added a checkbox to the edit level page to check if a level should require email confirmation.
 * Added a "Validate User" link to the user admin to force validate a user.
 
 = .1 =
