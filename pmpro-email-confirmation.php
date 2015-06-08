@@ -72,7 +72,7 @@ function pmproec_isEmailConfirmationLevel($level_id)
 	$email_confirmation = get_option('pmproec_email_confirmation_' . $level_id, false);	
 	
 	//check option and global var
-	return (!empty($email_confirmation) || in_array($level_id, $pmpro_email_confirmation_levels));
+	return (!empty($email_confirmation) || !empty($pmpro_email_confirmation_levels) && in_array($level_id, $pmpro_email_confirmation_levels));
 }
 
 //generate a key from a user id
