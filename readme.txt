@@ -24,6 +24,7 @@ Addon for Paid Memberships Pro that will include a validation link in the confir
 == Changelog ==
 = .2.1 =
 * Fixed typo in text added to email. (Thanks, Jiks)
+* BUG: Fixed login URL destination when users are logged out
 
 = .2 =
 * Added a checkbox to the edit level page to check if a level should require email confirmation.

@@ -177,7 +177,7 @@ function pmproec_init_validate()
 			if(is_user_logged_in())			
 				wp_redirect(home_url());
 			else
-				wp_redirect(login_url());
+				wp_redirect(wp_login_url());
 			
 			exit;
 		}
