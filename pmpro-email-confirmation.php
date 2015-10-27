@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Email Confirmation Add On
 Plugin URI: http://www.paidmembershipspro.com/addons/pmpro-email-confirmation/
 Description: Require email confirmation before certain levels are enabled for members.
-Version: .2
+Version: .2.1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -140,7 +140,7 @@ add_filter("pmpro_has_membership_access_filter", "pmproec_pmpro_has_membership_a
 function pmproec_pmpro_email_body($body, $email)
 {
 	//must be a confirmation email and checkout template
-	if(pmproec_isEmailConfirmationLevel($email->data['membership_id']) && strpos($email->template, "checkout") !== false)
+	if(!empty($email->data['membership_id']) && pmproec_isEmailConfirmationLevel($email->data['membership_id']) && strpos($email->template, "checkout") !== false)
 	{
 		//get user
 		$user = get_user_by("login", $email->data['user_login']);
@@ -150,7 +150,7 @@ function pmproec_pmpro_email_body($body, $email)
 		if(empty($validated) || $validated != "validated")
 		{		
 			$url = home_url("?ui=" . $user->ID . "&validate=" . $validated);
-			$body = "<p><strong>IMPORTANT! You must follow this link to confirm your email addredss before your membership is fully activated:<br /><a href='" . $url . "'>" . $url . "</a></strong></p><hr />" . $body;
+			$body = "<p><strong>IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated:<br /><a href='" . $url . "'>" . $url . "</a></strong></p><hr />" . $body;
 			$body = str_replace("Your membership account is now active.", "", $body);
 		}
 	}
