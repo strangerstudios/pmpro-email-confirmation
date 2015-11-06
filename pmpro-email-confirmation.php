@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Email Confirmation Add On
 Plugin URI: http://www.paidmembershipspro.com/addons/pmpro-email-confirmation/
 Description: Require email confirmation before certain levels are enabled for members.
-Version: .2.1
+Version: .2.2
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -173,6 +173,8 @@ function pmproec_init_validate()
 		{
 			//validate!
 			update_user_meta($user->ID, "pmpro_email_confirmation_key", "validated");
+
+			do_action('pmproec_after_validate_user', $user->ID, $validate);
 			
 			if(is_user_logged_in())			
 				wp_redirect(home_url());
