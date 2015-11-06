@@ -22,6 +22,9 @@ Addon for Paid Memberships Pro that will include a validation link in the confir
   * Find the user in the Users list or Members List in your WP dashboard, hover over their username in the list and click "Validate User".
   
 == Changelog ==
+= .2.2 =
+* Added pmproec_after_validate_user hook to execute custom code after validation.
+
 = .2.1 =
 * Fixed typo in text added to email. (Thanks, Jiks)
 * BUG: Fixed login URL destination when users are logged out

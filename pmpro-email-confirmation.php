@@ -173,6 +173,8 @@ function pmproec_init_validate()
 		{
 			//validate!
 			update_user_meta($user->ID, "pmpro_email_confirmation_key", "validated");
+
+			do_action('pmproec_after_validate_user', $user->ID, $validate);
 			
 			if(is_user_logged_in())			
 				wp_redirect(home_url());
