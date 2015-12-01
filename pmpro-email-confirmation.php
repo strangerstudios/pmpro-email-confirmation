@@ -144,14 +144,20 @@ function pmproec_pmpro_email_body($body, $email)
 	{
 		//get user
 		$user = get_user_by("login", $email->data['user_login']);
-		
-		//need validation?
+
 		$validated = $user->pmpro_email_confirmation_key;
+		$url = home_url("?ui=" . $user->ID . "&validate=" . $validated);
+
+		//need validation?
 		if(empty($validated) || $validated != "validated")
-		{		
-			$url = home_url("?ui=" . $user->ID . "&validate=" . $validated);
-			$body = "<p><strong>IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated:<br /><a href='" . $url . "'>" . $url . "</a></strong></p><hr />" . $body;
-			$body = str_replace("Your membership account is now active.", "", $body);
+		{
+			//use validation_link substitute?
+			if(false === stripos($body, "!!validation_link!!"))
+			{
+				$body = "<p><strong>IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated:<br /><a href='" . $url . "'>" . $url . "</a></strong></p><hr />" . $body;
+				$body = str_replace("Your membership account is now active.", "", $body);
+			} else
+				$body = str_ireplace("!!validation_link!!", $url, $body);
 		}
 	}
 	
