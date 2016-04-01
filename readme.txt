@@ -3,8 +3,8 @@
 Contributors: strangerstudios, messica
 Tags: pmpro, paid memberships pro, email, confirmation, validate, validation, confirm, customize, member, membership, subscription, addon
 Requires at least: 3.5
-Tested up to: 4.4
-Stable tag: .3
+Tested up to: 4.5
+Stable tag: .4
 
 == Description ==
 Addon for Paid Memberships Pro that will include a validation link in the confirmation email sent to users signing up for certain levels on your site. They will still be members, but the pmpro_has_membership_access_filter will return false until they validate their email or an admin validates for them through the dashboard.
@@ -22,6 +22,9 @@ Addon for Paid Memberships Pro that will include a validation link in the confir
   * Find the user in the Users list or Members List in your WP dashboard, hover over their username in the list and click "Validate User".
   
 == Changelog ==
+= .4 =
+* ENHANCEMENT: Now also filtering pmpro_has_membership_level to users who aren't confirmed won't see content hidden via shortcodes or pmpro_hasMembershipLevel().
+
 = .3 =
 * If you have !!validation_link!! in your email body, the validation link will be inserted there instead of at the top of the email. (Thanks, Thomas Sjolshagen)
 

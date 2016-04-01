@@ -135,6 +135,33 @@ function pmproec_pmpro_has_membership_access_filter($hasaccess, $mypost, $myuser
 add_filter("pmpro_has_membership_access_filter", "pmproec_pmpro_has_membership_access_filter", 10, 4);
 
 /*
+	If a user hasn't validated yet, restrict access via shortcodes or pmpro_hasMembershipLevel
+*/
+function pmproec_pmpro_has_membership_level($haslevel, $user_id, $levels) {
+	//if they don't have the level, ignore this
+	if(!$haslevel)
+		return $haslevel;
+		
+	//if not checking for a level, ignore this
+	if(empty($levels))
+		return $haslevel;
+	
+	//does this user have a level that requires confirmation?
+	$user_membership_level = pmpro_getMembershipLevelForUser($user_id);	
+	if(pmproec_isEmailConfirmationLevel($user_membership_level->id))
+	{
+		//if they still have a validation key, they haven't clicked on the validation link yet
+		$validation_key = get_user_meta($user_id, "pmpro_email_confirmation_key", true);
+				
+		if(!empty($validation_key) && $validation_key != "validated")
+			$haslevel = false;
+	}
+		
+	return $haslevel;
+}
+add_action('pmpro_has_membership_level', 'pmproec_pmpro_has_membership_level', 10, 3);
+
+/*
 	Add validation lik to confirmation email.
 */
 function pmproec_pmpro_email_body($body, $email)
