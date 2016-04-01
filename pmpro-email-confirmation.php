@@ -92,7 +92,7 @@ function pmproec_pmpro_after_checkout($user_id)
 {
 	global $pmpro_level;
 	
-	if(pmproec_isEmailConfirmationLevel($pmpro_level->id))
+	if(!empty($pmpro_level) && pmproec_isEmailConfirmationLevel($pmpro_level->id))
 	{
 		//already validated?
 		$oldkey = get_user_meta($user_id, "pmpro_email_confirmation_key", true);
