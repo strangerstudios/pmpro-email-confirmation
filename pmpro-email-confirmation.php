@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Email Confirmation Add On
 Plugin URI: http://www.paidmembershipspro.com/addons/pmpro-email-confirmation/
 Description: Require email confirmation before certain levels are enabled for members.
-Version: .4
+Version: .5
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -121,7 +121,7 @@ function pmproec_pmpro_has_membership_access_filter($hasaccess, $mypost, $myuser
 	
 	//does this user have a level that requires confirmation?
 	$user_membership_level = pmpro_getMembershipLevelForUser($myuser->ID);
-	if(pmproec_isEmailConfirmationLevel($user_membership_level->id))
+	if( !empty($user_membership_level) && pmproec_isEmailConfirmationLevel($user_membership_level->id))
 	{
 		//if they still have a validation key, they haven't clicked on the validation link yet
 		$validation_key = get_user_meta($myuser->ID, "pmpro_email_confirmation_key", true);
