@@ -166,6 +166,12 @@ add_action('pmpro_has_membership_level', 'pmproec_pmpro_has_membership_level', 1
 */
 function pmproec_pmpro_email_body($body, $email)
 {
+
+	//ignore admin emails.
+	if ( strpos($email->template, "admin") !== false ) {
+		return $body;
+	}
+	
 	//must be a confirmation email and checkout template
 	if(!empty($email->data['membership_id']) && pmproec_isEmailConfirmationLevel($email->data['membership_id']) && strpos($email->template, "checkout") !== false)
 	{
