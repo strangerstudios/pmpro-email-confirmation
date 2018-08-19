@@ -27,37 +27,75 @@ Author URI: http://www.strangerstudios.com
 function pmproec_pmpro_membership_level_after_other_settings()
 {	
 	$level_id = intval($_REQUEST['edit']);
-	if($level_id > 0)
-		$email_confirmation = get_option('pmproec_email_confirmation_' . $level_id);	
-	else
+	if( $level_id > 0 ) {
+		$email_confirmation = get_option('pmproec_email_confirmation_' . $level_id);
+		$reset_email_confirmation = get_option( 'pmproec_reset_email_confirmation_' . $level_id );	
+	}else {
 		$email_confirmation = false;
+		$reset_email_confirmation = false;
+	}
+
 ?>
 <h3 class="topborder">Email Confirmation</h3>
 <table>
 <tbody class="form-table">
 	<tr>
 		<th scope="row" valign="top"><label for="email_confirmation"><?php _e('Email Confirmation:', 'pmpro');?></label></th>
+
 		<td>
 			<input type="checkbox" id="email_confirmation" name="email_confirmation" value="1" <?php checked($email_confirmation, 1);?> />
 			<label for="email_confirmation"><?php _e('Check this to require email validation for this level.', 'pmpro');?></label>
 		</td>
 	</tr>
+	<tr id="pmproec_reset_confirmation" <?php if(!$email_confirmation){ ?> style="display:none;" <?php } ?> >
+	<th scope="row" valign="top"><label for="reset_email_confirmation"><?php _e('Reset Email Confirmation:', 'pmpro');?></label></th>
+		<td>
+			<input type="checkbox" id="reset_email_confirmation" name="reset_email_confirmation" value="1" <?php checked($reset_email_confirmation, 1);?> />
+			<label for="reset_email_confirmation"><?php _e('Check this to require email validation when a user updates their email address.', 'pmpro');?></label>
+		</td>
+	</tr>
 </tbody>
 </table>
+
+<!-- PMPro Email Confirmation -->
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		jQuery('#email_confirmation').click(function(){
+			jQuery('#pmproec_reset_confirmation').toggle();
+		});
+			
+		
+	});
+</script>
 <?php
 }
 add_action('pmpro_membership_level_after_other_settings', 'pmproec_pmpro_membership_level_after_other_settings');
 
 //save email_confirmation setting when the level is saved/added
-function pmproec_pmpro_save_membership_level($level_id)
-{
-	if(isset($_REQUEST['email_confirmation']))
+function pmproec_pmpro_save_membership_level($level_id) {
+
+	if(isset($_REQUEST['email_confirmation'])){
 		$email_confirmation = intval($_REQUEST['email_confirmation']);
-	else
+	} else {
 		$email_confirmation = 0;
-	delete_option('pmproec_email_confirmation_' . $level_id);
-	add_option('pmproec_email_confirmation_' . $level_id, $email_confirmation, '', 'no');
+	}
+
+	if(isset($_REQUEST['reset_email_confirmation'])){
+		$reset_email_confirmation = intval($_REQUEST['reset_email_confirmation']);
+	} else {
+		$reset_email_confirmation = 0;
+	}
+
+	//Failsafe, if user selects reset email but not email confirmation. Set the reset option to 0.
+	if( isset($_REQUEST['reset_email_confirmation']) && !isset($_REQUEST['email_confirmation'])) {
+		$reset_email_confirmation = 0;
+	}
+
+	update_option('pmproec_email_confirmation_' . $level_id, $email_confirmation );
+	update_option('pmproec_reset_email_confirmation_' . $level_id, $reset_email_confirmation );
+
 }
+
 add_action("pmpro_save_membership_level", "pmproec_pmpro_save_membership_level");
 
 /*
@@ -78,7 +116,7 @@ function pmproec_isEmailConfirmationLevel($level_id)
 //generate a key from a user id
 function pmproec_getValidationKey($user_id)
 {
-	$key = md5($user_id . AUTH_KEY . $user_id);
+	$key = md5($user_id . AUTH_KEY . $user_id . time());
 	if(strlen($key) > 16)
 		$key = substr($key, 0, 16);
 		
@@ -173,6 +211,7 @@ function pmproec_pmpro_email_body($body, $email)
 		$user = get_user_by("login", $email->data['user_login']);
 
 		$validated = $user->pmpro_email_confirmation_key;
+
 		$url = home_url("?ui=" . $user->ID . "&validate=" . $validated);
 
 		//add a filter to allow users to add extra arguments to the validation URL.
@@ -245,6 +284,119 @@ function pmproec_pmpro_confirmation_message($message)
 }
 add_filter("pmpro_confirmation_message", "pmproec_pmpro_confirmation_message");
 
+/**
+ * Add a link on user's account page to resend the confirmation email.
+ */
+function pmproec_add_resend_email_link_to_account() {
+	global $current_user;
+
+	$level = pmpro_getMembershipLevelForUser($current_user->ID);
+	$level_id = $level->ID;
+	$user = get_user_by( 'ID', $current_user->ID );
+	$validated = $user->pmpro_email_confirmation_key;
+
+	//if level does not require confirmation, bail.
+	if( pmproec_isEmailConfirmationLevel($level_id) === false ) {
+		return;
+	}
+
+	//if user is already validated, bail.
+	if( $validated == 'validated' ){
+		return;
+	}
+
+	//add a nonce here
+	$url = add_query_arg( 
+		array(
+			'resendconfirmation'	=>	1,
+			)
+		); 
+
+	echo '<a href="' . esc_url($url) . '">' . __( 'Resend Confirmation Email', 'pmpro-email-confirmation' ) . '</a>';
+
+}
+add_action( 'pmpro_member_action_links_before', 'pmproec_add_resend_email_link_to_account' );
+
+/**
+ * Resend validation URL for the user.
+ */
+function pmproec_resend_the_confirmation_email() {
+	global $current_user;
+
+	if( !empty( $_REQUEST['user_id'] ) && !empty( $_REQUEST['resendconfirmation'] ) ){
+		$user_id = (int) $_REQUEST['user_id'];
+
+		//check if nonce is valid for admin
+		check_admin_referer( 'resendconfirmation_'.$user_id);
+
+		pmproec_resend_confirmation_email( $user_id );
+
+	}elseif( !empty( $_REQUEST['resendconfirmation'] ) ){
+
+		pmproec_resend_confirmation_email();	
+
+	}
+
+}
+
+add_action( 'init', 'pmproec_resend_the_confirmation_email' );
+
+/**
+ * Function to create a confirmation email for a user.
+ */
+function pmproec_resend_confirmation_email( $user_id = NULL ) {
+		global $current_user, $pmproec_msg, $pmproec_msgt;
+
+		//Fallback to current_user if the user's ID is blank.
+		if( empty( $user_id ) ){
+			$user_id = $current_user->ID;
+		}
+		
+		$body = file_get_contents( dirname( __FILE__ ) . "/email/resend_confirmation.html" );
+
+		$user = get_user_by( 'ID', $user_id );
+		$validated = $user->pmpro_email_confirmation_key;
+
+		//Do not go any further if user is validated.
+		if( $validated == 'validated' ) {
+			return;
+		}
+
+		//filter to allow additional query arguments.
+		$pmpro_query_args = apply_filters( 'pmproec_query_args', array() );
+
+		$url = home_url("?ui=" . $user->ID . "&validate=" . $validated);
+
+		//add query arguments to the URL (on top of existing args)
+		$url = ( add_query_arg(
+			$pmpro_query_args,
+			$url
+			));
+
+		if(empty($validated) || $validated != "validated") {
+			//use validation_link substitute?
+			if(false === stripos($body, "!!validation_link!!")) {
+				$body = "<p><strong>IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated:<br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
+			} else {
+				$body = str_ireplace("!!validation_link!!", $url, $body);
+			}
+		
+			//Setup the new email.
+			$pmpro_email = new PMProEmail();
+			//Setup the email data
+			$pmpro_email->body = $body;
+			$pmpro_email->subject = __( 'Confirm Your Email Address', 'pmpro-email-confirmation' );
+			$pmpro_email->email = $user->user_email;
+			$pmpro_email->data = array( "display_name" => $user->display_name, "user_email" => $user->user_email, "login_link" => wp_login_url() );
+			$pmpro_email->template = 'resend_confirmation';
+			$pmpro_email->sendEmail();
+
+			$pmproec_msg = 'A confirmation email has been sent to ' . $user->user_email;
+			$pmproec_msgt = 'updated';
+		}
+
+}
+
 /*
 Function to add links to the plugin row meta
 */
@@ -280,6 +432,11 @@ function pmproec_user_row_actions($actions, $user) {
 				$url .= "&paged=" . intval($_REQUEST['paged']);
 			$url = wp_nonce_url($url, 'pmproecvalidate_' . $user->ID);
 			$actions[] = '<a href="' . $url . '">Validate User</a>';
+
+			//Add a resend email for admins or users that have $cap pmproec_validate_user_cap.
+			$resend_url = admin_url("users.php?user_id=" . $user->ID . "&resendconfirmation=1");
+			$resend_url = wp_nonce_url($resend_url, 'resendconfirmation_'.$user->ID );
+			$actions[] = '<a href="' . $resend_url . '">Resend Confirmation Email</a>';
 		}
 		else
 			$actions[] = 'Validated';
@@ -348,3 +505,67 @@ function pmproec_admin_notices()
 		echo "<div class=\"$pmproec_msgt\"><p>$pmproec_msg</p></div>"; 
 }
 add_action('admin_notices', 'pmproec_admin_notices');
+
+
+/**
+ * Generate a new key for email confirmation - don't send the same key twice.
+ * @since 0.5
+ */
+function pmproec_generateNewKey( $user_id = NULL ){
+	global $current_user;
+
+	if( empty( $user_id ) ){
+		$user_id = $current_user->ID;
+	}
+
+	//remove the old key.
+	delete_user_meta( $user_id, 'pmpro_email_confirmation_key' );
+
+	//create a new key and assign it to the user meta.
+	$newkey = pmproec_getValidationKey( $user_id );
+	update_user_meta( $user_id, "pmpro_email_confirmation_key", $newkey );
+
+}
+/**
+ * Require users to reconfirm their new email address if set in membership level.
+ * @since 0.5
+ */
+function pmproec_profile_update( $user_id , $old_user_data ) {
+
+	//if an admin edits a user's email, assume that they stay validated.
+	if( current_user_can( 'manage_options' ) ){
+		return;
+	}
+
+	//get level for the user.
+	$level = pmpro_getMembershipLevelForUser( $user_id );
+
+	//if user does not have an active membership, don't carry on.
+	if( empty( $level ) ){
+		return;
+	}
+
+	//get the reset confirmation email settings.
+	$resend_confirmation_email = get_option( 'pmproec_reset_email_confirmation_' . $level->ID);
+
+	//if the level does not require email confirmation, abort.
+	if( !pmproec_isEmailConfirmationLevel( $level->ID ) ){
+		return;
+	}
+
+	//if they don't have these settings, just quit.
+	if( !$resend_confirmation_email ){
+   		return;
+   	}
+
+	$user = get_user_by( 'ID', $user_id );
+	//check if email data was changed, generate a key and send the email again.
+
+	if( $old_user_data->user_email != $user->user_email ) {
+		pmproec_generateNewKey( $user_id );
+		pmproec_resend_confirmation_email( $user_id );
+	}
+
+}
+
+add_action( 'profile_update', 'pmproec_profile_update', 10, 2 );
