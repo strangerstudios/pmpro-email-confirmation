@@ -40,18 +40,18 @@ function pmproec_pmpro_membership_level_after_other_settings()
 <table>
 <tbody class="form-table">
 	<tr>
-		<th scope="row" valign="top"><label for="email_confirmation"><?php _e('Email Confirmation:', 'pmpro');?></label></th>
+		<th scope="row" valign="top"><label for="email_confirmation"><?php _e('Email Confirmation:', 'pmpro-email-confirmation');?></label></th>
 
 		<td>
 			<input type="checkbox" id="email_confirmation" name="email_confirmation" value="1" <?php checked($email_confirmation, 1);?> />
-			<label for="email_confirmation"><?php _e('Check this to require email validation for this level.', 'pmpro');?></label>
+			<label for="email_confirmation"><?php _e('Check this to require email validation for this level.', 'pmpro-email-confirmation');?></label>
 		</td>
 	</tr>
 	<tr id="pmproec_reset_confirmation" <?php if(!$email_confirmation){ ?> style="display:none;" <?php } ?> >
-	<th scope="row" valign="top"><label for="reset_email_confirmation"><?php _e('Reset Email Confirmation:', 'pmpro');?></label></th>
+	<th scope="row" valign="top"><label for="reset_email_confirmation"><?php _e('Reset Email Confirmation:', 'pmpro-email-confirmation');?></label></th>
 		<td>
 			<input type="checkbox" id="reset_email_confirmation" name="reset_email_confirmation" value="1" <?php checked($reset_email_confirmation, 1);?> />
-			<label for="reset_email_confirmation"><?php _e('Check this to require email validation when a user updates their email address.', 'pmpro');?></label>
+			<label for="reset_email_confirmation"><?php _e('Check this to require email validation when a user updates their email address.', 'pmpro-email-confirmation');?></label>
 		</td>
 	</tr>
 </tbody>
@@ -391,7 +391,7 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 			$pmpro_email->template = 'resend_confirmation';
 			$pmpro_email->sendEmail();
 
-			$pmproec_msg = 'A confirmation email has been sent to ' . $user->user_email;
+			$pmproec_msg = __( 'A confirmation email has been sent to', 'pmpro-email-confirmation' ) . ' ' . $user->user_email;
 			$pmproec_msgt = 'updated';
 		}
 
@@ -404,7 +404,7 @@ function pmproec_plugin_row_meta($links, $file) {
 	if(strpos($file, 'pmpro-email-confirmation.php') !== false)
 	{
 		$new_links = array(
-			'<a href="' . esc_url('http://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url('http://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-email-confirmation' ) ) . '">' . __( 'Support', 'pmpro-email-confirmation' ) . '</a>',
 		);
 		$links = array_merge($links, $new_links);
 	}
@@ -436,7 +436,7 @@ function pmproec_user_row_actions($actions, $user) {
 			//Add a resend email for admins or users that have $cap pmproec_validate_user_cap.
 			$resend_url = admin_url("users.php?user_id=" . $user->ID . "&resendconfirmation=1");
 			$resend_url = wp_nonce_url($resend_url, 'resendconfirmation_'.$user->ID );
-			$actions[] = '<a href="' . $resend_url . '">Resend Confirmation Email</a>';
+			$actions[] = '<a href="' . $resend_url . '">' . __( "Resend Confirmation Email", "pmpro-email-confirmation" ) . '</a>';
 		}
 		else
 			$actions[] = 'Validated';
@@ -465,7 +465,7 @@ function pmproec_validate_user()
 		if(empty($user))
 		{
 			//user not found error
-			$pmproec_msg = 'Could not reset sessions. User not found.';
+			$pmproec_msg = __( 'Could not reset sessions. User not found.', 'pmpro-email-confirmation' );
 			$pmproec_msgt = 'error';
 		}			
 		else
@@ -478,7 +478,7 @@ function pmproec_validate_user()
 			if(!current_user_can($cap))
 			{
 				//show error message
-				$pmproec_msg = 'You do not have permission to validate users.';
+				$pmproec_msg = __( 'You do not have permission to validate users.', 'pmpro-email-confirmation' );
 				$pmproec_msgt = 'error';
 			}
 			else
@@ -487,7 +487,7 @@ function pmproec_validate_user()
 				update_user_meta($user_id, "pmpro_email_confirmation_key", "validated");
 				
 				//show success message
-				$pmproec_msg = $user->user_email . ' has been validated.';
+				$pmproec_msg = $user->user_email . ' ' . __( 'has been validated.', 'pmpro-email-confirmation' );
 				$pmproec_msgt = 'updated';
 			}
 		}						
