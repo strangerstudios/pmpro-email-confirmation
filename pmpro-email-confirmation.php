@@ -394,11 +394,20 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 			//Setup the new email.
 			$pmpro_email = new PMProEmail();
 			//Setup the email data
+			$template = 'resend_confirmation';
 			$pmpro_email->body = $body;
 			$pmpro_email->subject = __( 'Confirm Your Email Address', 'pmpro-email-confirmation' );
 			$pmpro_email->email = $user->user_email;
-			$pmpro_email->data = array( "display_name" => $user->display_name, "user_email" => $user->user_email, "login_link" => wp_login_url() );
-			$pmpro_email->template = 'resend_confirmation';
+			$pmpro_email->data = array( 
+				"subject"               => $pmpro_email->subject,
+				"name"                  => $user->display_name,
+				"user_login"            => $user->user_login,
+				"sitename"              => get_option( "blogname" ),
+				"siteemail"             => pmpro_getOption( "from_email" ),
+				"login_link"            => wp_login_url(),
+			);
+
+			$pmpro_email->template = $template;
 			$pmpro_email->sendEmail();
 
 			$pmproec_msg = __( 'A confirmation email has been sent to', 'pmpro-email-confirmation' ) . ' ' . $user->user_email;
@@ -579,3 +588,31 @@ function pmproec_profile_update( $user_id , $old_user_data ) {
 }
 
 add_action( 'profile_update', 'pmproec_profile_update', 10, 2 );
+
+
+/**
+ * Integrate with Email Templates Admin Editor - 
+ *
+ */
+function pmproec_email_templates( $pmproet_email_defaults ) {
+
+	// Add the resend email confirmation template.
+	$pmproet_email_defaults['resend_confirmation'] = array(
+		'subject' => 'Please confirm your email address for !!sitename!!',
+		'description' => 'Resend Email Confirmation',
+		'body' => file_get_contents( dirname( __FILE__ ) . "/email/resend_confirmation.html" )
+
+	);
+
+
+	return $pmproet_email_defaults;
+
+}
+add_filter( 'pmproet_templates', 'pmproec_email_templates', 10, 1 );
+
+function pmproec_add_email_template( $templates, $page_name, $type = 'emails', $where = 'local', $ext = 'html' ) {
+	$templates[] = dirname(__FILE__) . "/email/resend_confirmation.html";
+
+	return $templates;
+}
+add_filter( 'pmpro_email_custom_template_path', 'pmproec_add_email_template', 10, 5 );
