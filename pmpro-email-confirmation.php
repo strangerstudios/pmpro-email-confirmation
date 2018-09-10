@@ -349,7 +349,7 @@ function pmproec_resend_the_confirmation_email() {
 	}
 }
 
-add_action( 'init', 'pmproec_resend_the_confirmation_email' );
+add_action( 'init', 'pmproec_resend_the_confirmation_email', 20 );
 
 /**
  * Function to create a confirmation email for a user.
@@ -361,8 +361,6 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 		if ( empty( $user_id ) ) {
 			$user_id = $current_user->ID;
 		}
-		
-		$body = file_get_contents( dirname( __FILE__ ) . "/email/resend_confirmation.html" );
 
 		$user = get_user_by( 'ID', $user_id );
 		$validated = $user->pmpro_email_confirmation_key;
@@ -371,6 +369,8 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 		if ( $validated == 'validated' ) {
 			return;
 		}
+
+		$body = file_get_contents( dirname( __FILE__ ) . "/email/resend_confirmation.html" );
 
 		//filter to allow additional query arguments.
 		$pmpro_query_args = apply_filters( 'pmproec_query_args', array() );
@@ -384,30 +384,30 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 			));
 
 		if ( empty( $validated ) || $validated != "validated" ) {
+
 			//use validation_link substitute?
 			if ( false === stripos( $body, "!!validation_link!!" ) ) {
 				$body = "<p><strong>IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated:<br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
 			} else {
 				$body = str_ireplace( "!!validation_link!!", $url, $body );
 			}
-		
+
 			//Setup the new email.
 			$pmpro_email = new PMProEmail();
 			//Setup the email data
-			$template = 'resend_confirmation';
 			$pmpro_email->body = $body;
 			$pmpro_email->subject = __( 'Confirm Your Email Address', 'pmpro-email-confirmation' );
 			$pmpro_email->email = $user->user_email;
 			$pmpro_email->data = array( 
-				"subject"               => $pmpro_email->subject,
-				"name"                  => $user->display_name,
-				"user_login"            => $user->user_login,
+				"display_name"          => $user->display_name,
+				"user_login"			=> $user->user_login,
+				"user_email"            => $user->user_email,
 				"sitename"              => get_option( "blogname" ),
 				"siteemail"             => pmpro_getOption( "from_email" ),
 				"login_link"            => wp_login_url(),
+				"validation_link"		=> $url
 			);
-
-			$pmpro_email->template = $template;
+			$pmpro_email->template = 'resend_confirmation';
 			$pmpro_email->sendEmail();
 
 			$pmproec_msg = __( 'A confirmation email has been sent to', 'pmpro-email-confirmation' ) . ' ' . $user->user_email;
@@ -594,18 +594,17 @@ add_action( 'profile_update', 'pmproec_profile_update', 10, 2 );
  * Integrate with Email Templates Admin Editor - 
  *
  */
-function pmproec_email_templates( $pmproet_email_defaults ) {
+function pmproec_email_templates( $templates ) {
 
 	// Add the resend email confirmation template.
-	$pmproet_email_defaults['resend_confirmation'] = array(
+	$templates['resend_confirmation'] = array(
 		'subject' => 'Please confirm your email address for !!sitename!!',
 		'description' => 'Resend Email Confirmation',
-		'body' => file_get_contents( dirname( __FILE__ ) . "/email/resend_confirmation.html" )
-
+		'body' => file_get_contents( dirname( __FILE__ ) . "/email/resend_confirmation.html" ),
 	);
 
 
-	return $pmproet_email_defaults;
+	return $templates;
 
 }
 add_filter( 'pmproet_templates', 'pmproec_email_templates', 10, 1 );
