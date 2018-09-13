@@ -6,6 +6,7 @@ Requires at least: 3.5
 Tested up to: 4.9
 Stable tag: .5
 
+
 == Description ==
 Addon for Paid Memberships Pro that will include a validation link in the confirmation email sent to users signing up for certain levels on your site. They will still be members, but the pmpro_has_membership_access_filter will return false until they validate their email or an admin validates for them through the dashboard.
 
@@ -26,6 +27,7 @@ Addon for Paid Memberships Pro that will include a validation link in the confir
 
   
 == Changelog ==
+
 = .5 - 2018-09-13 =
 * ENHANCEMENT: Added filter pmproec_extra_query_args to allow developers to add extra query args to the email confirmation link.
 * ENHANCEMENT: Option added to revalidate user's if they change their email address - if an admin changes a user email user's won't need to validate their email again.
