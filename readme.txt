@@ -3,8 +3,8 @@
 Contributors: strangerstudios, messica
 Tags: pmpro, paid memberships pro, email, confirmation, validate, validation, confirm, customize, member, membership, subscription, addon
 Requires at least: 3.5
-Tested up to: 4.5
-Stable tag: .4
+Tested up to: 4.9
+Stable tag: .5
 
 == Description ==
 Addon for Paid Memberships Pro that will include a validation link in the confirmation email sent to users signing up for certain levels on your site. They will still be members, but the pmpro_has_membership_access_filter will return false until they validate their email or an admin validates for them through the dashboard.
@@ -15,13 +15,28 @@ Addon for Paid Memberships Pro that will include a validation link in the confir
 3. Edit your Paid Memberships Pro levels and check the "require email validation for this level" checkbox.
 
 == Frequently Asked Questions ==
-* I found a bug in the plugin.
+= I found a bug in the plugin. =
   * Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/strangerstudios/pmpro-email-confirmation/issues
 
-* How do I manually validate a user's email address?
+= How do I manually validate a user's email address? =
   * Find the user in the Users list or Members List in your WP dashboard, hover over their username in the list and click "Validate User".
+
+= How do I submit a translation for next release =
+* Please add your .po and .mo files to the languages folder and create a pull request (https://github.com/strangerstudios/pmpro-email-confirmation/pulls) or reach out to www.paidmembershipspro.com/contact
+
   
 == Changelog ==
+= .5 - 2018-09-13 =
+* ENHANCEMENT: Added filter pmproec_extra_query_args to allow developers to add extra query args to the email confirmation link.
+* ENHANCEMENT: Option added to revalidate user's if they change their email address - if an admin changes a user email user's won't need to validate their email again.
+* ENHANCEMENT: Admins and users are able to resend the email confirmation at any point while the user's email is not validated.
+* ENHANCEMENT: Resend email confirmation link added to the user's membership account page.
+* ENHANCEMENT: Custom HTML email template for resending email confirmation requests.
+* ENHANCEMENT: Integrates with Email Templates Admin Editor and uses !!validation_link!! shortcode available in the resend confirmation email template.
+* ENHANCEMENT: Adjusted the method used to generate validation keys.
+* BUG FIX: Removed PHP Notice error log entry.
+* ENHANCEMENT: Support localization, includes master POT file.
+
 = .4 =
 * ENHANCEMENT: Now also filtering pmpro_has_membership_level to users who aren't confirmed won't see content hidden via shortcodes or pmpro_hasMembershipLevel().
 
