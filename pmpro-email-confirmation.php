@@ -170,14 +170,27 @@ function pmproec_pmpro_has_membership_access_filter( $hasaccess, $mypost, $myuse
 		return $hasaccess;
 	}
 	
-	//does this user have a level that requires confirmation?
-	$user_membership_level = pmpro_getMembershipLevelForUser($myuser->ID);
-	if ( ! empty( $user_membership_level ) && pmproec_isEmailConfirmationLevel( $user_membership_level->id ) ) {
-		//if they still have a validation key, they haven't clicked on the validation link yet
-		$validation_key = get_user_meta($myuser->ID, "pmpro_email_confirmation_key", true);
-		
-		if ( ! empty( $validation_key ) && $validation_key != "validated" ) {
-			$hasaccess = false;
+	//if they've validated already, continue
+	$validation_key = get_user_meta($myuser->ID, "pmpro_email_confirmation_key", true);
+	if ( $validation_key === 'validated' ) {
+		return $hasaccess;
+	}
+	
+	//let's check if one of the required levels requires validation
+	$require_validation = false;
+	$user_membership_levels = pmpro_getMembershipLevelsForUser($myuser->ID);
+	foreach( $post_membership_levels as $post_membership_level ) {
+		foreach( $user_membership_levels as $user_membership_level ) {
+			if( $post_membership_level->id == $user_membership_level->id ) {
+				if ( ! pmproec_isEmailConfirmationLevel( $post_membership_level->id ) ) {
+					// The user has one of the required levels,
+					// which doesn't require email confirmation.
+					$hasaccess = true;
+					return $hasaccess;
+				} else {
+					$hasaccess = false;
+				}
+			}
 		}
 	}
 	
