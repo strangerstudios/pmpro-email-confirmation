@@ -25,7 +25,7 @@
 function pmproec_load_plugin_text_domain() {
 	load_plugin_textdomain( 'pmpro-email-confirmation', false, basename( dirname( __FILE__ ) ) . '/languages' ); 
 }
-add_action( 'plugins_loaded', 'pmproec_load_plugin_text_domain' ); 
+add_action( 'init', 'pmproec_load_plugin_text_domain' ); 
 
 /*
 	Add checkbox to edit level page to set if level requires email confirmation.
