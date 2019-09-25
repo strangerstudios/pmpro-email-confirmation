@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Paid Memberships Pro - Email Confirmation Add On
- * Plugin URI: http://www.paidmembershipspro.com/addons/pmpro-email-confirmation/
+ * Plugin URI: https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/
  * Description: Require email confirmation before certain levels are enabled for members.
  * Version: .5
- * Author: Stranger Studios
- * Author URI: http://www.strangerstudios.com
+ * Author: Paid Memberships Pro
+ * Author URI: https://www.paidmembershipspro.com/
  * Text Domain: pmpro-email-confirmation
  * Domain Path: /languages
  */
@@ -664,4 +664,22 @@ function pmproec_add_email_template( $templates, $page_name, $type = 'emails', $
 	return $templates;
 }
 add_filter( 'pmpro_email_custom_template_path', 'pmproec_add_email_template', 10, 5 );
+
+/**
+ * Function to add links to the plugin row meta
+ *
+ * @param array  $links Array of links to be shown in plugin meta.
+ * @param string $file Filename of the plugin meta is being shown for.
+ */
+function pmproec_plugin_row_meta( $links, $file ) {
+	if ( strpos( $file, 'pmpro-email-confirmation.php' ) !== false ) {
+		$new_links = array(
+			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-email-confirmation' ) ) . '">' . __( 'Docs', 'pmpro-email-confirmation' ) . '</a>',
+			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/support/' ) . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-email-confirmation' ) ) . '">' . __( 'Support', 'pmpro-email-confirmation' ) . '</a>',
+		);
+		$links = array_merge( $links, $new_links );
+	}
+	return $links;
+}
+add_filter( 'plugin_row_meta', 'pmproec_plugin_row_meta', 10, 2 );
 
