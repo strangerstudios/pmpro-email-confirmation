@@ -1,12 +1,11 @@
-#, fuzzy
 msgid ""
 msgstr ""
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "Project-Id-Version: Paid Memberships Pro - Email Confirmation Add On\n"
 "POT-Creation-Date: 2020-05-12 18:08+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2020-05-12 18:14+0000\n"
 "Last-Translator: \n"
-"Language-Team: \n"
+"Language-Team: English (UK)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,111 +17,118 @@ msgstr ""
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
 "_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: en_GB\n"
+"X-Loco-Version: 2.3.3; wp-5.4.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
-"Language: "
 
 #: pmpro-email-confirmation.php:45
 msgid "Email Confirmation"
-msgstr ""
+msgstr "Email Confirmation"
 
 #: pmpro-email-confirmation.php:49
 msgid "Email Confirmation:"
-msgstr ""
+msgstr "Email Confirmation:"
 
 #: pmpro-email-confirmation.php:53
 msgid "Check this to require email validation for this level."
-msgstr ""
+msgstr "Check this to require email validation for this level."
 
 #: pmpro-email-confirmation.php:57
 msgid "Reset Email Confirmation:"
-msgstr ""
+msgstr "Reset Email Confirmation:"
 
 #: pmpro-email-confirmation.php:60
 msgid ""
 "Check this to require email validation when a user updates their email "
 "address."
 msgstr ""
+"Check this to require email validation when a user updates their email "
+"address."
 
 #: pmpro-email-confirmation.php:266 pmpro-email-confirmation.php:413
 msgid ""
 "IMPORTANT! You must follow this link to confirm your email address before "
 "your membership is fully activated:"
 msgstr ""
+"IMPORTANT! You must follow this link to confirm your email address before "
+"your membership is fully activated:"
 
 #: pmpro-email-confirmation.php:267
 msgid "Your membership account is now active."
-msgstr ""
+msgstr "Your membership account is now active."
 
 #: pmpro-email-confirmation.php:313
 msgid "is now active"
-msgstr ""
+msgstr "is now active"
 
 #: pmpro-email-confirmation.php:313
 msgid "will be activated as soon as you confirm your email address."
-msgstr ""
+msgstr "will be activated as soon as you confirm your email address."
 
 #: pmpro-email-confirmation.php:313
 msgid "Important! You must click on the confirmation URL sent to"
-msgstr ""
+msgstr "Important! You must click on the confirmation URL sent to"
 
 #: pmpro-email-confirmation.php:313
 msgid "before you gain full access to your membership"
-msgstr ""
+msgstr "before you gain full access to your membership"
 
 #: pmpro-email-confirmation.php:350 pmpro-email-confirmation.php:482
 msgid "Resend Confirmation Email"
-msgstr ""
+msgstr "Resend Confirmation Email"
 
 #: pmpro-email-confirmation.php:422
 msgid "Confirm Your Email Address"
-msgstr ""
+msgstr "Confirm Your Email Address"
 
 #: pmpro-email-confirmation.php:436
 msgid "A confirmation email has been sent to"
-msgstr ""
+msgstr "A confirmation email has been sent to"
 
 #: pmpro-email-confirmation.php:448
 msgid "Visit Customer Support Forum"
-msgstr ""
+msgstr "Visit Customer Support Forum"
 
 #: pmpro-email-confirmation.php:448
 msgid "Support"
-msgstr ""
+msgstr "Support"
 
 #: pmpro-email-confirmation.php:477
 msgid "Validate User"
-msgstr ""
+msgstr "Validate User"
 
 #: pmpro-email-confirmation.php:510
 msgid "Could not reset sessions. User not found."
-msgstr ""
+msgstr "Could not reset sessions. User not found."
 
 #: pmpro-email-confirmation.php:523
 msgid "You do not have permission to validate users."
-msgstr ""
+msgstr "You do not have permission to validate users."
 
 #: pmpro-email-confirmation.php:532
 msgid "has been validated."
-msgstr ""
+msgstr "has been validated."
 
 #. Plugin Name of the plugin/theme
 msgid "Paid Memberships Pro - Email Confirmation Add On"
-msgstr ""
+msgstr "Paid Memberships Pro - Email Confirmation Add On"
 
 #. Description of the plugin/theme
 msgid ""
 "Require email confirmation before certain levels are enabled for members."
 msgstr ""
+"Require email confirmation before certain levels are enabled for members."
 
 #. Plugin URI of the plugin/theme
 msgid "http://www.paidmembershipspro.com/addons/pmpro-email-confirmation/"
-msgstr ""
+msgstr "http://www.paidmembershipspro.com/addons/pmpro-email-confirmation/"
 
 #. Author of the plugin/theme
 msgid "Stranger Studios"
-msgstr ""
+msgstr "Stranger Studios"
 
 #. Author URI of the plugin/theme
 msgid "http://www.strangerstudios.com"
-msgstr ""
+msgstr "http://www.strangerstudios.com"
