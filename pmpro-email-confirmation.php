@@ -553,7 +553,7 @@ function pmproec_pmpro_text_filter($text)
 
 			//need validation?
 			if(empty($validated) || $validated != "validated") {
-				$text = '<p>' . sprintf(__('Your %s membership will be activated as soon as you confirm your email address.', 'pmpro-email-confirmation'), $user_membership_level->name) . '<strong>' . sprintf(__('Important! You must click on the confirmation URL sent to %s before you gain full access to your membership</strong>.', 'pmpro-email-confirmation'), $current_user->user_email) . '</p>';
+				$text = '<p>' . sprintf(__('Your %s membership will be activated as soon as you confirm your email address.', 'pmpro-email-confirmation'), $user_membership_level->name) . ' <strong>' . sprintf(__('Important! You must click on the confirmation URL sent to %s before you gain full access to your membership</strong>.', 'pmpro-email-confirmation'), $current_user->user_email) . '</p>';
 			}
 		}
 	}	
