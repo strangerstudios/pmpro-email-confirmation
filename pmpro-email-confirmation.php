@@ -42,22 +42,22 @@ function pmproec_pmpro_membership_level_after_other_settings() {
 	}
 
 ?>
-<h3 class="topborder"><?php _e( 'Email Confirmation', 'pmpro-email-confirmation' ); ?></h3>
+<h3 class="topborder"><?php __( 'Email Confirmation', 'pmpro-email-confirmation' ); ?></h3>
 <table>
 <tbody class="form-table">
 	<tr>
-		<th scope="row" valign="top"><label for="email_confirmation"><?php _e('Email Confirmation:', 'pmpro-email-confirmation');?></label></th>
+		<th scope="row" valign="top"><label for="email_confirmation"><?php __('Email Confirmation:', 'pmpro-email-confirmation');?></label></th>
 
 		<td>
 			<input type="checkbox" id="email_confirmation" name="email_confirmation" value="1" <?php checked($email_confirmation, 1);?> />
-			<label for="email_confirmation"><?php _e('Check this to require email validation for this level.', 'pmpro-email-confirmation');?></label>
+			<label for="email_confirmation"><?php __('Check this to require email validation for this level.', 'pmpro-email-confirmation');?></label>
 		</td>
 	</tr>
 	<tr id="pmproec_reset_confirmation" <?php if(!$email_confirmation){ ?> style="display:none;" <?php } ?> >
-	<th scope="row" valign="top"><label for="reset_email_confirmation"><?php _e('Reset Email Confirmation:', 'pmpro-email-confirmation');?></label></th>
+	<th scope="row" valign="top"><label for="reset_email_confirmation"><?php __('Reset Email Confirmation:', 'pmpro-email-confirmation');?></label></th>
 		<td>
 			<input type="checkbox" id="reset_email_confirmation" name="reset_email_confirmation" value="1" <?php checked($reset_email_confirmation, 1);?> />
-			<label for="reset_email_confirmation"><?php _e('Check this to require email validation when a user updates their email address.', 'pmpro-email-confirmation');?></label>
+			<label for="reset_email_confirmation"><?php __('Check this to require email validation when a user updates their email address.', 'pmpro-email-confirmation');?></label>
 		</td>
 	</tr>
 </tbody>
@@ -263,8 +263,8 @@ function pmproec_pmpro_email_body( $body, $email ) {
 		if ( empty( $validated ) || $validated != "validated" ) {
 			//use validation_link substitute?
 			if ( false === stripos( $body, "!!validation_link!!" ) ) {
-				$body = "<p><strong>" ._e('IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated:', 'pmpro-email-confirmation') ." <br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
-				$body = str_replace( "" . _e('Your membership account is now active.', 'pmpro-email-confirmation') ." ", "", $body );			} else
+				$body = "<p><strong>" .__('IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated:', 'pmpro-email-confirmation') ." <br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
+				$body = str_replace( "" . __('Your membership account is now active.', 'pmpro-email-confirmation') ." ", "", $body );			} else
 				$body = str_ireplace( "!!validation_link!!", $url, $body );
 		}
 	}
@@ -310,7 +310,7 @@ function pmproec_pmpro_confirmation_message($message)
 		global $current_user;
 		if($current_user->pmpro_email_confirmation_key != "validated")
 		{
-			$message = str_replace("" . _e('is now active', 'pmpro-email-confirmation') ." ", "" . _e('will be activated as soon as you confirm your email address.', 'pmpro-email-confirmation') ." <strong>" ._e('Important! You must click on the confirmation URL sent to', 'pmpro-email-confirmation') . " " . $current_user->user_email . " " . _e('before you gain full access to your membership', 'pmpro-email-confirmation') . "</strong>", $message);
+			$message = str_replace("is now active", __('will be activated as soon as you confirm your email address. ', 'pmpro-email-confirmation') ." <strong>" .__('Important! You must click on the confirmation URL sent to', 'pmpro-email-confirmation') . " " . $current_user->user_email . " " . __('before you gain full access to your membership', 'pmpro-email-confirmation') . "</strong>", $message);
 		}
 	}
 	
@@ -553,7 +553,7 @@ function pmproec_pmpro_text_filter($text)
 
 			//need validation?
 			if(empty($validated) || $validated != "validated") {
-				$text = '<p>' . sprintf(__('Your %s membership will be activated as soon as you confirm your email address.', 'pmproec'), $user_membership_level->name) . '<strong>' . sprintf(__('Important! You must click on the confirmation URL sent to %s before you gain full access to your membership</strong>.', 'pmproec'), $current_user->user_email) . '</p>';
+				$text = '<p>' . sprintf(__('Your %s membership will be activated as soon as you confirm your email address.', 'pmpro-email-confirmation'), $user_membership_level->name) . '<strong>' . sprintf(__('Important! You must click on the confirmation URL sent to %s before you gain full access to your membership</strong>.', 'pmpro-email-confirmation'), $current_user->user_email) . '</p>';
 			}
 		}
 	}	
