@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Paid Memberships Pro - Email Confirmation Add On\n"
-"POT-Creation-Date: 2020-05-12 18:08+0000\n"
+"POT-Creation-Date: 2020-05-12 19:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -55,11 +55,7 @@ msgid "Your membership account is now active."
 msgstr ""
 
 #: pmpro-email-confirmation.php:313
-msgid "is now active"
-msgstr ""
-
-#: pmpro-email-confirmation.php:313
-msgid "will be activated as soon as you confirm your email address."
+msgid "will be activated as soon as you confirm your email address. "
 msgstr ""
 
 #: pmpro-email-confirmation.php:313
@@ -104,6 +100,20 @@ msgstr ""
 
 #: pmpro-email-confirmation.php:532
 msgid "has been validated."
+msgstr ""
+
+#: pmpro-email-confirmation.php:556
+#, php-format
+msgid ""
+"Your %s membership will be activated as soon as you confirm your email "
+"address."
+msgstr ""
+
+#: pmpro-email-confirmation.php:556
+#, php-format
+msgid ""
+"Important! You must click on the confirmation URL sent to %s before you gain "
+"full access to your membership</strong>."
 msgstr ""
 
 #. Plugin Name of the plugin/theme
