@@ -42,22 +42,22 @@ function pmproec_pmpro_membership_level_after_other_settings() {
 	}
 
 ?>
-<h3 class="topborder"><?php __( 'Email Confirmation', 'pmpro-email-confirmation' ); ?></h3>
+<h3 class="topborder"><?php _e( 'Email Confirmation', 'pmpro-email-confirmation' ); ?></h3>
 <table>
 <tbody class="form-table">
 	<tr>
-		<th scope="row" valign="top"><label for="email_confirmation"><?php __('Email Confirmation:', 'pmpro-email-confirmation');?></label></th>
+		<th scope="row" valign="top"><label for="email_confirmation"><?php _e('Email Confirmation:', 'pmpro-email-confirmation');?></label></th>
 
 		<td>
 			<input type="checkbox" id="email_confirmation" name="email_confirmation" value="1" <?php checked($email_confirmation, 1);?> />
-			<label for="email_confirmation"><?php __('Check this to require email validation for this level.', 'pmpro-email-confirmation');?></label>
+			<label for="email_confirmation"><?php _e('Check this to require email validation for this level.', 'pmpro-email-confirmation');?></label>
 		</td>
 	</tr>
 	<tr id="pmproec_reset_confirmation" <?php if(!$email_confirmation){ ?> style="display:none;" <?php } ?> >
-	<th scope="row" valign="top"><label for="reset_email_confirmation"><?php __('Reset Email Confirmation:', 'pmpro-email-confirmation');?></label></th>
+	<th scope="row" valign="top"><label for="reset_email_confirmation"><?php _e('Reset Email Confirmation:', 'pmpro-email-confirmation');?></label></th>
 		<td>
 			<input type="checkbox" id="reset_email_confirmation" name="reset_email_confirmation" value="1" <?php checked($reset_email_confirmation, 1);?> />
-			<label for="reset_email_confirmation"><?php __('Check this to require email validation when a user updates their email address.', 'pmpro-email-confirmation');?></label>
+			<label for="reset_email_confirmation"><?php _e('Check this to require email validation when a user updates their email address.', 'pmpro-email-confirmation');?></label>
 		</td>
 	</tr>
 </tbody>
