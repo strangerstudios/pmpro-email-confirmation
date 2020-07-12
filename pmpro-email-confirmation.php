@@ -348,7 +348,7 @@ function pmproec_add_resend_email_link_to_account() {
 			)
 		); 
 
-	echo '<a href="' . esc_url( $url ) . '">' . __( 'Resend Confirmation Email', 'pmpro-email-confirmation' ) . '</a>';
+	echo '<a href="' . esc_url( $url ) . '">' . __( 'Resend Confirmation Email', 'pmpro-email-confirmation' ) . '</a> | ';
 
 }
 add_action( 'pmpro_member_action_links_before', 'pmproec_add_resend_email_link_to_account' );
@@ -438,6 +438,24 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 			$pmproec_msgt = 'updated';
 		}
 
+}
+
+/*
+Function to show Resend Email Notification on Account Page
+*/
+add_filter( 'the_content', 'pmproec_show_account_email_notification');
+
+function pmproec_show_account_email_notification($content){
+global $pmproec_msg, $pmproec_msgt, $pmpro_pages;
+if ( ! empty( $pmproec_msg ) && (is_page ($pmpro_pages['account']))) {
+	$new_content = "<div class=\"pmpro_message pmpro_success\"><p>$pmproec_msg</p></div>";
+	$new_content .= $content;
+	return $new_content;
+}
+else 
+{
+	return $content;
+}
 }
 
 /*
