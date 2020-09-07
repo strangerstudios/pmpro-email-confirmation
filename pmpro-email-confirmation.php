@@ -292,9 +292,9 @@ function pmproec_init_validate() {
 			do_action( 'pmproec_after_validate_user', $user->ID, $validate );
 			
 			if ( is_user_logged_in() ) {		
-				wp_redirect( home_url() );
+				wp_redirect( apply_filters( 'pmproec_logged_in_validate_redirect', home_url() ) );
 			} else {
-				wp_redirect( wp_login_url() );
+				wp_redirect( apply_filters( 'pmproec_logged_out_validate_redirect', wp_login_url() ) );
 			}
 			
 			exit;
