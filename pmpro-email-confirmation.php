@@ -340,7 +340,7 @@ function pmproec_add_resend_email_link_to_account() {
 	}
 
 	//if user is already validated, bail.
-	if ( $validated == 'validated' ){
+	if ( empty( $validated ) ||$validated == 'validated' ){
 		return;
 	}
 
