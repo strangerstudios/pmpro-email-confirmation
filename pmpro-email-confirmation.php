@@ -160,6 +160,7 @@ add_action("pmpro_after_checkout", "pmproec_pmpro_after_checkout");
  * Reference: https://www.paidmembershipspro.com/hook/pmpro_has_membership_access_filter/
  */
 function pmproec_pmpro_has_membership_access_filter( $hasaccess, $mypost, $myuser, $post_membership_levels ) {
+
 	//if they don't have access, ignore this
 	if ( ! $hasaccess ) {
 		return $hasaccess;
@@ -172,7 +173,7 @@ function pmproec_pmpro_has_membership_access_filter( $hasaccess, $mypost, $myuse
 	
 	//if they've validated already, continue
 	$validation_key = get_user_meta($myuser->ID, "pmpro_email_confirmation_key", true);
-	if ( $validation_key === 'validated' ) {
+	if ( empty( $validation_key ) || $validation_key === 'validated' ) {
 		return $hasaccess;
 	}
 	
@@ -202,6 +203,7 @@ add_filter( "pmpro_has_membership_access_filter", "pmproec_pmpro_has_membership_
  * Reference: https://www.paidmembershipspro.com/hook/pmpro_has_membership_level/
  */
 function pmproec_pmpro_has_membership_level( $haslevel, $user_id, $levels ) {
+
 	//if they don't have the level, ignore this
 	if ( ! $haslevel ) {
 		return $haslevel;
@@ -214,7 +216,8 @@ function pmproec_pmpro_has_membership_level( $haslevel, $user_id, $levels ) {
 	
 	//if they've validated already, continue
 	$validation_key = get_user_meta($user_id, "pmpro_email_confirmation_key", true);
-	if ( $validation_key === 'validated' ) {
+
+	if ( empty( $validation_key ) || $validation_key === 'validated' ) {
 		return $haslevel;
 	}
 	
@@ -558,7 +561,7 @@ function pmproec_pmpro_text_filter($text)
 			$validated = $current_user->pmpro_email_confirmation_key;
 
 			//need validation?
-			if(empty($validated) || $validated != "validated") {
+			if( ! empty($validated) && $validated != "validated" ) {
 				$text = '<p>' . sprintf(__('Your %s membership will be activated as soon as you confirm your email address', 'pmpro-email-confirmation'), $user_membership_level->name) . '.<strong>' . sprintf(__('Important! You must click on the confirmation URL sent to %s before you gain full access to your membership', 'pmpro-email-confirmation'), $current_user->user_email) . '</strong>.</p>';
 			}
 		}
