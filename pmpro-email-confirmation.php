@@ -458,19 +458,6 @@ else
 }
 }
 
-/*
-Function to add links to the plugin row meta
-*/
-function pmproec_plugin_row_meta( $links, $file ) {
-	if( strpos( $file, 'pmpro-email-confirmation.php' ) !== false) {
-		$new_links = array(
-			'<a href="' . esc_url('http://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-email-confirmation' ) ) . '">' . __( 'Support', 'pmpro-email-confirmation' ) . '</a>',
-		);
-		$links = array_merge( $links, $new_links );
-	}
-	return $links;
-}
-add_filter( 'plugin_row_meta', 'pmproec_plugin_row_meta', 10, 2 );
 
 /**
  * Add link to the user action links to validate a user.
