@@ -3,8 +3,8 @@
 Contributors: strangerstudios, messica
 Tags: pmpro, paid memberships pro, email, confirmation, validate, validation, confirm, customize, member, membership, subscription, addon
 Requires at least: 3.5
-Tested up to: 4.9
-Stable tag: .5
+Tested up to: 5.5
+Stable tag: 0.6
 
 
 == Description ==
@@ -27,6 +27,14 @@ Addon for Paid Memberships Pro that will include a validation link in the confir
 
   
 == Changelog ==
+
+= 0.6 - 2020-09-10 =
+* SECURITY: Escaped text on front-end.
+* BUG FIX: Fixed issue where manually added members were validated but treated as unvalidated members on the front-end.
+* BUG FIX: Fixed grammar (spacing) issue for the email confirmation message. 
+* ENHANCEMENT: Added localization functionality, includes Afrikaans and English (UK) translations
+* ENHANCEMENT: Added new filters to handle validation redirects for logged-in and logged-out users: `pmproec_logged_in_validate_redirect` and `pmproec_logged_out_validate_redirect` respectively.
+* ENHANCEMENT: Added 'Resend Confirmation Email' to the Membership Account page.
 
 = .5 - 2018-09-13 =
 * ENHANCEMENT: Added filter pmproec_extra_query_args to allow developers to add extra query args to the email confirmation link.

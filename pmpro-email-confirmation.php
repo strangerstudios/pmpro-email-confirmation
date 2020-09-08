@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Email Confirmation Add On
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/
  * Description: Require email confirmation before certain levels are enabled for members.
- * Version: .5
+ * Version: 0.6
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com/
  * Text Domain: pmpro-email-confirmation
@@ -42,22 +42,22 @@ function pmproec_pmpro_membership_level_after_other_settings() {
 	}
 
 ?>
-<h3 class="topborder"><?php _e( 'Email Confirmation', 'pmpro-email-confirmation' ); ?></h3>
+<h3 class="topborder"><?php esc_html_e( 'Email Confirmation', 'pmpro-email-confirmation' ); ?></h3>
 <table>
 <tbody class="form-table">
 	<tr>
-		<th scope="row" valign="top"><label for="email_confirmation"><?php _e('Email Confirmation', 'pmpro-email-confirmation');?>:</label></th>
+		<th scope="row" valign="top"><label for="email_confirmation"><?php esc_html_e('Email Confirmation', 'pmpro-email-confirmation');?>:</label></th>
 
 		<td>
 			<input type="checkbox" id="email_confirmation" name="email_confirmation" value="1" <?php checked($email_confirmation, 1);?> />
-			<label for="email_confirmation"><?php _e('Check this to require email validation for this level', 'pmpro-email-confirmation');?>.</label>
+			<label for="email_confirmation"><?php esc_html_e('Check this to require email validation for this level', 'pmpro-email-confirmation');?>.</label>
 		</td>
 	</tr>
 	<tr id="pmproec_reset_confirmation" <?php if(!$email_confirmation){ ?> style="display:none;" <?php } ?> >
-	<th scope="row" valign="top"><label for="reset_email_confirmation"><?php _e('Reset Email Confirmation', 'pmpro-email-confirmation');?>:</label></th>
+	<th scope="row" valign="top"><label for="reset_email_confirmation"><?php esc_html_e('Reset Email Confirmation', 'pmpro-email-confirmation');?>:</label></th>
 		<td>
 			<input type="checkbox" id="reset_email_confirmation" name="reset_email_confirmation" value="1" <?php checked($reset_email_confirmation, 1);?> />
-			<label for="reset_email_confirmation"><?php _e('Check this to require email validation when a user updates their email address', 'pmpro-email-confirmation');?>.</label>
+			<label for="reset_email_confirmation"><?php esc_html_e('Check this to require email validation when a user updates their email address', 'pmpro-email-confirmation');?>.</label>
 		</td>
 	</tr>
 </tbody>
@@ -266,8 +266,8 @@ function pmproec_pmpro_email_body( $body, $email ) {
 		if ( empty( $validated ) || $validated != "validated" ) {
 			//use validation_link substitute?
 			if ( false === stripos( $body, "!!validation_link!!" ) ) {
-				$body = "<p><strong>" . __("IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated", "pmpro-email-confirmation") . ":<br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
-				$body = str_replace( __('Your membership account is now active', 'pmpro-email-confirmation') . '.', "", $body );
+				$body = "<p><strong>" . esc_html__("IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated", "pmpro-email-confirmation") . ":<br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
+				$body = str_replace( esc_html__('Your membership account is now active', 'pmpro-email-confirmation') . '.', "", $body );
 			} else
 				$body = str_ireplace( "!!validation_link!!", $url, $body );
 		}
@@ -314,7 +314,7 @@ function pmproec_pmpro_confirmation_message($message)
 		global $current_user;
 		if($current_user->pmpro_email_confirmation_key != "validated")
 		{
-			$message = str_replace( "is now active", __( "will be activated as soon as you confirm your email address", "pmpro-email-confirmation" ) . ". <strong>" . sprintf( __( "Important! You must click on the confirmation URL sent to %s before you gain full access to your membership", "pmpro-email-confirmation" ), $current_user->user_email ) . "</strong>", $message );
+			$message = str_replace( "is now active", esc_html__( "will be activated as soon as you confirm your email address", "pmpro-email-confirmation" ) . ". <strong>" . sprintf( esc_html__( "Important! You must click on the confirmation URL sent to %s before you gain full access to your membership", "pmpro-email-confirmation" ), $current_user->user_email ) . "</strong>", $message );
 		}
 	}
 	
@@ -351,7 +351,7 @@ function pmproec_add_resend_email_link_to_account() {
 			)
 		); 
 
-	echo '<a href="' . esc_url( $url ) . '">' . __( 'Resend Confirmation Email', 'pmpro-email-confirmation' ) . '</a> | ';
+	echo '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Resend Confirmation Email', 'pmpro-email-confirmation' ) . '</a> | ';
 
 }
 add_action( 'pmpro_member_action_links_before', 'pmproec_add_resend_email_link_to_account' );
@@ -414,7 +414,7 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 
 			//use validation_link substitute?
 			if ( false === stripos( $body, "!!validation_link!!" ) ) {
-				$body = "<p><strong>" . __("IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated", "pmpro-email-confirmation") . ":<br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
+				$body = "<p><strong>" . esc_html__("IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated", "pmpro-email-confirmation") . ":<br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
 			} else {
 				$body = str_ireplace( "!!validation_link!!", $url, $body );
 			}
@@ -423,7 +423,7 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 			$pmpro_email = new PMProEmail();
 			//Setup the email data
 			$pmpro_email->body = $body;
-			$pmpro_email->subject = __( 'Confirm Your Email Address', 'pmpro-email-confirmation' );
+			$pmpro_email->subject = esc_html__( 'Confirm Your Email Address', 'pmpro-email-confirmation' );
 			$pmpro_email->email = $user->user_email;
 			$pmpro_email->data = array( 
 				"display_name"          => $user->display_name,
@@ -437,29 +437,28 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 			$pmpro_email->template = 'resend_confirmation';
 			$pmpro_email->sendEmail();
 
-			$pmproec_msg = __( 'A confirmation email has been sent to', 'pmpro-email-confirmation' ) . ' ' . $user->user_email;
+			$pmproec_msg = esc_html__( 'A confirmation email has been sent to', 'pmpro-email-confirmation' ) . ' ' . $user->user_email;
 			$pmproec_msgt = 'updated';
 		}
 
 }
 
-/*
-Function to show Resend Email Notification on Account Page
-*/
-add_filter( 'the_content', 'pmproec_show_account_email_notification');
+/**
+ * Function to show Resend Email Notification on Account Page
+ * @since 0.6
+ */
+function pmproec_show_account_email_notification( $content ) {
+	global $pmproec_msg, $pmproec_msgt, $pmpro_pages;
+	if ( ! empty( $pmproec_msg ) && is_page( $pmpro_pages['account'] ) ) {
+		$new_content = "<div class='pmpro_message pmpro_success'><p>" . esc_html( $pmproec_msg ) . "</p></div>";
+		$new_content .= $content;
+		$content = $new_content;
+	}
 
-function pmproec_show_account_email_notification($content){
-global $pmproec_msg, $pmproec_msgt, $pmpro_pages;
-if ( ! empty( $pmproec_msg ) && (is_page ($pmpro_pages['account']))) {
-	$new_content = "<div class=\"pmpro_message pmpro_success\"><p>$pmproec_msg</p></div>";
-	$new_content .= $content;
-	return $new_content;
-}
-else 
-{
 	return $content;
 }
-}
+add_filter( 'the_content', 'pmproec_show_account_email_notification' );
+
 
 
 /**
@@ -483,12 +482,12 @@ function pmproec_user_row_actions( $actions, $user ) {
 			}
 
 			$url = wp_nonce_url( $url, 'pmproecvalidate_' . $user->ID );
-			$actions[] = '<a href="' . esc_url( $url ) . '">' . __( 'Validate User', 'pmpro-email-confirmation' ) . '</a>';
+			$actions[] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Validate User', 'pmpro-email-confirmation' ) . '</a>';
 
 			//Add a resend email for admins or users that have $cap pmproec_validate_user_cap.
 			$resend_url = admin_url("users.php?user_id=" . $user->ID . "&resendconfirmation=1");
 			$resend_url = wp_nonce_url( $resend_url, 'resendconfirmation_'.$user->ID );
-			$actions[] = '<a href="' . $resend_url . '">' . __( "Resend Confirmation Email", "pmpro-email-confirmation" ) . '</a>';
+			$actions[] = '<a href="' . $resend_url . '">' . esc_html__( "Resend Confirmation Email", "pmpro-email-confirmation" ) . '</a>';
 		}
 		else
 			$actions[] = 'Validated';
@@ -529,7 +528,7 @@ function pmproec_validate_user()
 			if(!current_user_can($cap))
 			{
 				//show error message
-				$pmproec_msg = __( 'You do not have permission to validate users.', 'pmpro-email-confirmation' );
+				$pmproec_msg = esc_html__( 'You do not have permission to validate users.', 'pmpro-email-confirmation' );
 				$pmproec_msgt = 'error';
 			}
 			else
@@ -538,7 +537,7 @@ function pmproec_validate_user()
 				update_user_meta($user_id, "pmpro_email_confirmation_key", "validated");
 				
 				//show success message
-				$pmproec_msg = $user->user_email . ' ' . __( 'has been validated.', 'pmpro-email-confirmation' );
+				$pmproec_msg = $user->user_email . ' ' . esc_html__( 'has been validated.', 'pmpro-email-confirmation' );
 				$pmproec_msgt = 'updated';
 			}
 		}						
@@ -562,7 +561,7 @@ function pmproec_pmpro_text_filter($text)
 
 			//need validation?
 			if( ! empty($validated) && $validated != "validated" ) {
-				$text = '<p>' . sprintf(__('Your %s membership will be activated as soon as you confirm your email address', 'pmpro-email-confirmation'), $user_membership_level->name) . '.<strong> ' . sprintf(__('Important! You must click on the confirmation URL sent to %s before you gain full access to your membership', 'pmpro-email-confirmation'), $current_user->user_email) . '</strong>.</p>';
+				$text = '<p>' . sprintf( esc_html__('Your %s membership will be activated as soon as you confirm your email address', 'pmpro-email-confirmation'), $user_membership_level->name) . '.<strong> ' . sprintf( esc_html__('Important! You must click on the confirmation URL sent to %s before you gain full access to your membership', 'pmpro-email-confirmation'), $current_user->user_email) . '</strong>.</p>';
 			}
 		}
 	}	
@@ -578,7 +577,7 @@ add_filter("pmpro_not_logged_in_text_filter", "pmproec_pmpro_text_filter");
 function pmproec_admin_notices() {
 	global $pmproec_msg, $pmproec_msgt;
 	if ( ! empty( $pmproec_msg ) ) {
-		echo "<div class=\"$pmproec_msgt\"><p>$pmproec_msg</p></div>"; 
+		echo "<div class='$pmproec_msgt'><p>" . esc_html( $pmproec_msg ) . "</p></div>"; 
 	}
 }
 add_action( 'admin_notices', 'pmproec_admin_notices' );
@@ -655,8 +654,8 @@ function pmproec_email_templates( $templates ) {
 
 	// Add the resend email confirmation template.
 	$templates['resend_confirmation'] = array(
-		'subject' => __( 'Please confirm your email address for', 'pmpro-email-confirmation' ) . ' !!sitename!!',
-		'description' => __( 'Resend Email Confirmation', 'pmpro-email-confirmation' ),
+		'subject' => esc_html__( 'Please confirm your email address for', 'pmpro-email-confirmation' ) . ' !!sitename!!',
+		'description' => esc_html__( 'Resend Email Confirmation', 'pmpro-email-confirmation' ),
 		'body' => file_get_contents( dirname( __FILE__ ) . "/email/resend_confirmation.html" ),
 	);
 
@@ -682,8 +681,8 @@ add_filter( 'pmpro_email_custom_template_path', 'pmproec_add_email_template', 10
 function pmproec_plugin_row_meta( $links, $file ) {
 	if ( strpos( $file, 'pmpro-email-confirmation.php' ) !== false ) {
 		$new_links = array(
-			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-email-confirmation' ) ) . '">' . __( 'Docs', 'pmpro-email-confirmation' ) . '</a>',
-			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/support/' ) . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-email-confirmation' ) ) . '">' . __( 'Support', 'pmpro-email-confirmation' ) . '</a>',
+			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-email-confirmation' ) ) . '">' . esc_html__( 'Docs', 'pmpro-email-confirmation' ) . '</a>',
+			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/support/' ) . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-email-confirmation' ) ) . '">' . esc_html__( 'Support', 'pmpro-email-confirmation' ) . '</a>',
 		);
 		$links = array_merge( $links, $new_links );
 	}
