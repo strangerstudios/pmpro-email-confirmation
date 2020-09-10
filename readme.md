@@ -1,6 +1,6 @@
-# [Paid Memberships Pro - Email Confirmation](https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/) #
-
 ![](email-confirmation-banner.jpg)
+
+# [Paid Memberships Pro - Email Confirmation](https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/) #
 
 ![License](https://img.shields.io/badge/license-GPL--2.0%2B-red.svg?style=flat-square)
 
