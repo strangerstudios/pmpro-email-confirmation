@@ -335,13 +335,19 @@ add_filter("pmpro_confirmation_message", "pmproec_pmpro_confirmation_message");
 function pmproec_add_resend_email_link_to_account() {
 	global $current_user;
 
-	$level = pmpro_getMembershipLevelForUser( $current_user->ID );
-	$level_id = $level->ID;
+	$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 	$user = get_user_by( 'ID', $current_user->ID );
 	$validated = $user->pmpro_email_confirmation_key;
 
-	//if level does not require confirmation, bail.
-	if ( pmproec_isEmailConfirmationLevel( $level_id ) === false ) {
+	// If none of the user's levels require confirmation, bail.
+	$requires_confirmation = false;
+	foreach ( $levels as $level ) {
+		if ( pmproec_isEmailConfirmationLevel( $level->id ) ) {
+			$requires_confirmation = true;
+			break;
+		}
+	}
+	if ( ! $requires_confirmation ) {
 		return;
 	}
 
@@ -556,23 +562,28 @@ add_action('admin_init', 'pmproec_validate_user');
 */
 function pmproec_pmpro_text_filter($text)
 {
-	global $wpdb, $current_user, $post;
+	global $current_user;
+	// User doesn't have access. To check whether it is because their email is not validated,
+	// we can unhook our pmpro_has_membership_access_filter and check if the user would then have access.
+	remove_filter('pmpro_has_membership_access_filter', 'pmproec_pmpro_has_membership_access_filter', 10);
+	$hasaccess = pmpro_has_membership_access();
+	add_filter('pmpro_has_membership_access_filter', 'pmproec_pmpro_has_membership_access_filter', 10, 4);
 
-	if(!empty($post) && !empty($current_user->ID)) {
-		
-		//does this user have a level that requires confirmation?
-		$user_membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
-		if(!empty($user_membership_level) && pmproec_isEmailConfirmationLevel($user_membership_level->id)) {
-			$validated = $current_user->pmpro_email_confirmation_key;
+	if ( ! $hasaccess ) {
+		// User still does not have access. Email confirmations is not the preventing factor. Return the original text.
+		return $text;
+	}
 
-			//need validation?
-			if( ! empty($validated) && $validated != "validated" ) {
-				$text = '<p>' . sprintf( esc_html__('Your %s membership will be activated as soon as you confirm your email address', 'pmpro-email-confirmation'), $user_membership_level->name) . '.<strong> ' . sprintf( esc_html__('Important! You must click on the confirmation URL sent to %s before you gain full access to your membership', 'pmpro-email-confirmation'), $current_user->user_email) . '</strong>.</p>';
-			}
-		}
-	}	
-
-	return $text;
+	// User does not have access because their email is not validated.
+	// Let's just double check that they are not validated.
+	$validated = $current_user->pmpro_email_confirmation_key;
+	if ( empty( $validated ) || $validated == 'validated' ) {
+		// User is validated. Return the original text.
+		return $text;
+	}
+	
+	// User is not validated. Let's show them a message.
+	return '<p>' . esc_html__('Your membership will be activated as soon as you confirm your email address', 'pmpro-email-confirmation') . '.<strong> ' . sprintf( esc_html__('Important! You must click on the confirmation URL sent to %s before you gain full access to your membership', 'pmpro-email-confirmation'), $current_user->user_email) . '</strong>.</p>';
 }
 add_filter("pmpro_non_member_text_filter", "pmproec_pmpro_text_filter");
 add_filter("pmpro_not_logged_in_text_filter", "pmproec_pmpro_text_filter");
@@ -619,24 +630,27 @@ function pmproec_profile_update( $user_id , $old_user_data ) {
 		return;
 	}
 
-	//get level for the user.
-	$level = pmpro_getMembershipLevelForUser( $user_id );
+	//get levels for the user.
+	$levels = pmpro_getMembershipLevelsForUser( $user_id );
 
 	//if user does not have an active membership, don't carry on.
-	if( empty( $level ) ){
+	if( empty( $levels ) ){
 		return;
 	}
 
-	//get the reset confirmation email settings.
-	$resend_confirmation_email = get_option( 'pmproec_reset_email_confirmation_' . $level->ID);
-
-	//if the level does not require email confirmation, abort.
-	if( !pmproec_isEmailConfirmationLevel( $level->ID ) ){
-		return;
+	//get the resend confirmation email settings.
+	$resend_confirmation_email = false;
+	foreach ( $levels as $level ) {
+		if ( ! pmproec_isEmailConfirmationLevel( $level->ID ) ) {
+			continue;
+		}
+		if ( ! empty( get_option( 'pmproec_reset_email_confirmation_' . $level->ID) ) ) {
+			$resend_confirmation_email = true;
+		}
 	}
 
 	//if they don't have these settings, just quit.
-	if( !$resend_confirmation_email ){
+	if ( ! $resend_confirmation_email ) {
    		return;
    	}
 
