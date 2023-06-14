@@ -315,7 +315,8 @@ add_action("init", "pmproec_init_validate");
 function pmproec_pmpro_confirmation_message($message)
 {
 	//must be an email confirmation level
-	if(!empty($_REQUEST['level']) && pmproec_isEmailConfirmationLevel(intval($_REQUEST['level'])))
+	$level = pmpro_getLevelAtCheckout();
+	if ( ! empty( $level->id ) && pmproec_isEmailConfirmationLevel( intval( $level->id ) ) )
 	{
 		global $current_user;
 		if($current_user->pmpro_email_confirmation_key != "validated")
