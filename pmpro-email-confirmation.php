@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Email Confirmation Add On
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/
  * Description: Require email confirmation before certain levels are enabled for members.
- * Version: 0.6
+ * Version: 0.7
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com/
  * Text Domain: pmpro-email-confirmation
