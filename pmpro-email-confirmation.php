@@ -203,6 +203,7 @@ add_filter( "pmpro_has_membership_access_filter", "pmproec_pmpro_has_membership_
  * Reference: https://www.paidmembershipspro.com/hook/pmpro_has_membership_level/
  */
 function pmproec_pmpro_has_membership_level( $haslevel, $user_id, $levels ) {
+	global $pmpro_pages;
 
 	//if they don't have the level, ignore this
 	if ( ! $haslevel ) {
@@ -211,6 +212,11 @@ function pmproec_pmpro_has_membership_level( $haslevel, $user_id, $levels ) {
 		
 	//if not checking for a level, ignore this
 	if ( empty( $levels ) ) {
+		return $haslevel;
+	}
+
+	// If the user is trying to cancel, let them.
+	if ( is_page( $pmpro_pages['cancel'] ) ) {
 		return $haslevel;
 	}
 	
