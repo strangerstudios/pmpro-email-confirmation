@@ -42,7 +42,7 @@ function pmproec_pmpro_membership_level_after_other_settings() {
 	}
 
 ?>
-<h3 class="topborder"><?php esc_html_e( 'Email Confirmation', 'pmpro-email-confirmation' ); ?></h3>
+<h2 class="topborder"><?php esc_html_e( 'Email Confirmation', 'pmpro-email-confirmation' ); ?></h2>
 <table>
 <tbody class="form-table">
 	<tr>
