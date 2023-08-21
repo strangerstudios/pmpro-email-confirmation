@@ -551,6 +551,21 @@ function pmproec_validate_user()
 }
 add_action('admin_init', 'pmproec_validate_user');
 
+function pmproec_buddypress_sql( $sql_parts, $levels_included ) {
+
+	global $wpdb;
+
+		$sql_parts['JOIN'] .= " LEFT JOIN {$wpdb->usermeta} ecumm 
+			ON ecumm.meta_key = 'pmpro_email_confirmation_key' 			
+			AND m.user_id = ecumm.user_id ";
+
+		$sql_parts['WHERE'] .= " AND ( ecumm.meta_value = 'validated' OR ecumm.meta_value IS NULL OR ecumm.meta_value = '' ) ";
+	
+		return $sql_parts;
+
+}
+add_filter( 'pmpro_bp_directory_sql_parts', 'pmproec_buddypress_sql', 10, 2 );
+
 /*
 	Filter the message for users without access.
 */
