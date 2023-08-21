@@ -443,7 +443,7 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 				"user_login"			=> $user->user_login,
 				"user_email"            => $user->user_email,
 				"sitename"              => get_option( "blogname" ),
-				"siteemail"             => pmpro_getOption( "from_email" ),
+				"siteemail"             => get_option( "pmpro_from_email" ),
 				"login_link"            => wp_login_url(),
 				"validation_link"		=> $url
 			);
