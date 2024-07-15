@@ -331,43 +331,45 @@ add_filter("pmpro_confirmation_message", "pmproec_pmpro_confirmation_message");
 
 /**
  * Add a link on user's account page to resend the confirmation email.
- * Reference: https://www.paidmembershipspro.com/hook/pmpro_member_action_links_before/
+ * Reference: https://www.paidmembershipspro.com/hook/pmpro_member_action_links/
+ *
+ * @param array $action_links Array of action links for the Membership Account page.
+ * @param int   $level_id    ID of the level the action links are being shown for.
  */
-function pmproec_add_resend_email_link_to_account() {
+function pmproec_add_resend_email_link_to_account( $action_links, $level_id ) {
 	global $current_user;
 
-	$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 	$user = get_user_by( 'ID', $current_user->ID );
 	$validated = $user->pmpro_email_confirmation_key;
 
 	// If none of the user's levels require confirmation, bail.
 	$requires_confirmation = false;
-	foreach ( $levels as $level ) {
-		if ( pmproec_isEmailConfirmationLevel( $level->id ) ) {
-			$requires_confirmation = true;
-			break;
-		}
+	if ( pmproec_isEmailConfirmationLevel( $level_id ) ) {
+		$requires_confirmation = true;
 	}
+
 	if ( ! $requires_confirmation ) {
-		return;
+		return $action_links;
 	}
 
-	//if user is already validated, bail.
-	if ( empty( $validated ) ||$validated == 'validated' ){
-		return;
+	// If user is already validated, bail.
+	if ( empty( $validated ) || $validated == 'validated' ){
+		return $action_links;
 	}
 
-	//add a nonce here
+	// Add a nonce here.
 	$url = add_query_arg( 
 		array(
 			'resendconfirmation'	=>	1,
-			)
-		); 
+		)
+	);
 
-	echo '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Resend Confirmation Email', 'pmpro-email-confirmation' ) . '</a> | ';
+	// Add the "Resend Confirmation Email" action link.
+	$action_links['resend_confirmation_email'] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Resend Confirmation Email', 'pmpro-email-confirmation' ) . '</a>';
 
+	return $action_links;
 }
-add_action( 'pmpro_member_action_links_before', 'pmproec_add_resend_email_link_to_account' );
+add_action( 'pmpro_member_action_links', 'pmproec_add_resend_email_link_to_account', 10, 2 );
 
 /**
  * Resend validation email for the user.
@@ -573,10 +575,54 @@ function pmproec_buddypress_sql( $sql_parts, $levels_included ) {
 }
 add_filter( 'pmpro_bp_directory_sql_parts', 'pmproec_buddypress_sql', 10, 2 );
 
+/**
+ * Filter the header message for the no access message.
+ *
+ * @since TBD
+ *
+ * @param string $header The header message for the no access message.
+ * @return string The filtered header message for the no access message.
+ */
+function pmproec_no_access_message_header( $header ) {
+	global $current_user;
+
+	// We are running PMPro v3.1+, so make sure that deprecated filters don't run later.
+	remove_filter( 'pmpro_non_member_text_filter', 'pmproec_pmpro_text_filter' );
+	remove_filter( 'pmpro_not_logged_in_text_filter', 'pmproec_pmpro_text_filter' );
+
+	// If a user does not have a membership level, return default text.
+	if ( ! pmpro_hasMembershipLevel() ) {
+		return $header;
+	}
+
+	// User doesn't have access. To check whether it is because their email is not validated,
+	// we can unhook our pmpro_has_membership_access_filter and check if the user would then have access.
+	remove_filter( 'pmpro_has_membership_access_filter', 'pmproec_pmpro_has_membership_access_filter', 10 );
+	$hasaccess = pmpro_has_membership_access();
+	add_filter( 'pmpro_has_membership_access_filter', 'pmproec_pmpro_has_membership_access_filter', 10, 4 );
+
+	if ( ! $hasaccess ) {
+		// User still does not have access. Email confirmations is not the preventing factor. Return the original text.
+		return $header;
+	}
+
+	// User does not have access because their email is not validated.
+	// Let's just double check that they are not validated.
+	$validated = $current_user->pmpro_email_confirmation_key;
+	if ( empty( $validated ) || $validated == 'validated' ) {
+		// User is validated. Return the original text.
+		return $header;
+	}
+	
+	// User is not validated. Let's overwrite the header message.
+	return __( 'Email Confirmation Required', 'pmpro-email-confirmation' );
+}
+add_filter( 'pmpro_no_access_message_header', 'pmproec_no_access_message_header' ); // PMPro 3.1+
+
 /*
 	Filter the message for users without access.
 */
-function pmproec_pmpro_text_filter($text)
+function pmproec_pmpro_text_filter( $text )
 {
 	global $current_user;
 	// User doesn't have access. To check whether it is because their email is not validated,
@@ -601,8 +647,9 @@ function pmproec_pmpro_text_filter($text)
 	// User is not validated. Let's show them a message.
 	return '<p>' . esc_html__('Your membership will be activated as soon as you confirm your email address', 'pmpro-email-confirmation') . '.<strong> ' . sprintf( esc_html__('Important! You must click on the confirmation URL sent to %s before you gain full access to your membership', 'pmpro-email-confirmation'), $current_user->user_email) . '</strong>.</p>';
 }
-add_filter("pmpro_non_member_text_filter", "pmproec_pmpro_text_filter");
-add_filter("pmpro_not_logged_in_text_filter", "pmproec_pmpro_text_filter");
+add_filter( 'pmpro_no_access_message_body', 'pmproec_pmpro_text_filter' ); // PMPro 3.1+
+add_filter("pmpro_non_member_text_filter", "pmproec_pmpro_text_filter"); // Pre-PMPro 3.1
+add_filter("pmpro_not_logged_in_text_filter", "pmproec_pmpro_text_filter"); // Pre-PMPro 3.1
 
 /**
  * Show any messages generated by PMPro Email Confirmations
