@@ -331,43 +331,45 @@ add_filter("pmpro_confirmation_message", "pmproec_pmpro_confirmation_message");
 
 /**
  * Add a link on user's account page to resend the confirmation email.
- * Reference: https://www.paidmembershipspro.com/hook/pmpro_member_action_links_before/
+ * Reference: https://www.paidmembershipspro.com/hook/pmpro_member_action_links/
+ *
+ * @param array $action_links Array of action links for the Membership Account page.
+ * @param int   $level_id    ID of the level the action links are being shown for.
  */
-function pmproec_add_resend_email_link_to_account() {
+function pmproec_add_resend_email_link_to_account( $action_links, $level_id ) {
 	global $current_user;
 
-	$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 	$user = get_user_by( 'ID', $current_user->ID );
 	$validated = $user->pmpro_email_confirmation_key;
 
 	// If none of the user's levels require confirmation, bail.
 	$requires_confirmation = false;
-	foreach ( $levels as $level ) {
-		if ( pmproec_isEmailConfirmationLevel( $level->id ) ) {
-			$requires_confirmation = true;
-			break;
-		}
+	if ( pmproec_isEmailConfirmationLevel( $level_id ) ) {
+		$requires_confirmation = true;
 	}
+
 	if ( ! $requires_confirmation ) {
-		return;
+		return $action_links;
 	}
 
-	//if user is already validated, bail.
-	if ( empty( $validated ) ||$validated == 'validated' ){
-		return;
+	// If user is already validated, bail.
+	if ( empty( $validated ) || $validated == 'validated' ){
+		return $action_links;
 	}
 
-	//add a nonce here
+	// Add a nonce here.
 	$url = add_query_arg( 
 		array(
 			'resendconfirmation'	=>	1,
-			)
-		); 
+		)
+	);
 
-	echo '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Resend Confirmation Email', 'pmpro-email-confirmation' ) . '</a> | ';
+	// Add the "Resend Confirmation Email" action link.
+	$action_links['resend_confirmation_email'] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Resend Confirmation Email', 'pmpro-email-confirmation' ) . '</a>';
 
+	return $action_links;
 }
-add_action( 'pmpro_member_action_links_before', 'pmproec_add_resend_email_link_to_account' );
+add_action( 'pmpro_member_action_links', 'pmproec_add_resend_email_link_to_account', 10, 2 );
 
 /**
  * Resend validation email for the user.
