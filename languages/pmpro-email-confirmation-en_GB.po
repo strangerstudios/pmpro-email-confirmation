@@ -1,17 +1,17 @@
-# Copyright (C) 2023 Paid Memberships Pro
+# Copyright (C) 2024 Paid Memberships Pro
 # This file is distributed under the same license as the Paid Memberships Pro - Email Confirmation Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Email Confirmation Add On 0.7\n"
+"Project-Id-Version: Paid Memberships Pro - Email Confirmation Add On 0.8\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-08-21T17:15:01+00:00\n"
+"POT-Creation-Date: 2024-07-18T14:38:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.8.1\n"
+"X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: pmpro-email-confirmation\n"
 
 #: pmpro-email-confirmation.php:45
@@ -60,46 +60,56 @@ msgstr "before you gain full access to your membership"
 #: pmpro-email-confirmation.php:482
 #: pmpro-email-confirmation.php:367
 #: pmpro-email-confirmation.php:503
+#: pmpro-email-confirmation.php:368
+#: pmpro-email-confirmation.php:505
 msgid "Resend Confirmation Email"
 msgstr "Resend Confirmation Email"
 
 #: pmpro-email-confirmation.php:422
 #: pmpro-email-confirmation.php:439
+#: pmpro-email-confirmation.php:441
 msgid "Confirm Your Email Address"
 msgstr "Confirm Your Email Address"
 
 #: pmpro-email-confirmation.php:436
 #: pmpro-email-confirmation.php:453
+#: pmpro-email-confirmation.php:455
 msgid "A confirmation email has been sent to"
 msgstr "A confirmation email has been sent to"
 
 #: pmpro-email-confirmation.php:448
 #: pmpro-email-confirmation.php:721
+#: pmpro-email-confirmation.php:768
 msgid "Visit Customer Support Forum"
 msgstr "Visit Customer Support Forum"
 
 #: pmpro-email-confirmation.php:448
 #: pmpro-email-confirmation.php:721
+#: pmpro-email-confirmation.php:768
 msgid "Support"
 msgstr "Support"
 
 #: pmpro-email-confirmation.php:477
 #: pmpro-email-confirmation.php:498
+#: pmpro-email-confirmation.php:500
 msgid "Validate User"
 msgstr "Validate User"
 
 #: pmpro-email-confirmation.php:510
 #: pmpro-email-confirmation.php:531
+#: pmpro-email-confirmation.php:533
 msgid "Could not reset sessions. User not found."
 msgstr "Could not reset sessions. User not found."
 
 #: pmpro-email-confirmation.php:523
 #: pmpro-email-confirmation.php:544
+#: pmpro-email-confirmation.php:546
 msgid "You do not have permission to validate users."
 msgstr "You do not have permission to validate users."
 
 #: pmpro-email-confirmation.php:532
 #: pmpro-email-confirmation.php:553
+#: pmpro-email-confirmation.php:555
 msgid "has been validated."
 msgstr "has been validated."
 
@@ -115,11 +125,13 @@ msgstr "Important! You must click on the confirmation URL sent to %s before you 
 
 #. Plugin Name of the plugin/theme
 #. Plugin Name of the plugin
+#: pmpro-email-confirmation.php
 msgid "Paid Memberships Pro - Email Confirmation Add On"
 msgstr "Paid Memberships Pro - Email Confirmation Add On"
 
 #. Description of the plugin/theme
 #. Description of the plugin
+#: pmpro-email-confirmation.php
 msgid "Require email confirmation before certain levels are enabled for members."
 msgstr "Require email confirmation before certain levels are enabled for members."
 
@@ -136,14 +148,17 @@ msgid "http://www.strangerstudios.com"
 msgstr "http://www.strangerstudios.com"
 
 #. Plugin URI of the plugin
+#: pmpro-email-confirmation.php
 msgid "https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/"
 msgstr ""
 
 #. Author of the plugin
+#: pmpro-email-confirmation.php
 msgid "Paid Memberships Pro"
 msgstr ""
 
 #. Author URI of the plugin
+#: pmpro-email-confirmation.php
 msgid "https://www.paidmembershipspro.com/"
 msgstr ""
 
@@ -161,6 +176,7 @@ msgstr ""
 
 #: pmpro-email-confirmation.php:275
 #: pmpro-email-confirmation.php:430
+#: pmpro-email-confirmation.php:432
 msgid "IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated"
 msgstr ""
 
@@ -174,25 +190,35 @@ msgstr ""
 
 #: pmpro-email-confirmation.php:324
 #: pmpro-email-confirmation.php:602
+#: pmpro-email-confirmation.php:648
 msgid "Important! You must click on the confirmation URL sent to %s before you gain full access to your membership"
 msgstr ""
 
 #: pmpro-email-confirmation.php:602
+#: pmpro-email-confirmation.php:648
 msgid "Your membership will be activated as soon as you confirm your email address"
 msgstr ""
 
 #: pmpro-email-confirmation.php:693
+#: pmpro-email-confirmation.php:740
 msgid "Please confirm your email address for"
 msgstr ""
 
 #: pmpro-email-confirmation.php:694
+#: pmpro-email-confirmation.php:741
 msgid "Resend Email Confirmation"
 msgstr ""
 
 #: pmpro-email-confirmation.php:720
+#: pmpro-email-confirmation.php:767
 msgid "View Documentation"
 msgstr ""
 
 #: pmpro-email-confirmation.php:720
+#: pmpro-email-confirmation.php:767
 msgid "Docs"
+msgstr ""
+
+#: pmpro-email-confirmation.php:618
+msgid "Email Confirmation Required"
 msgstr ""
