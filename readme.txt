@@ -3,8 +3,8 @@
 Contributors: strangerstudios, messica
 Tags: pmpro, paid memberships pro, email, confirmation, validate, validation, confirm, customize, member, membership, subscription, addon
 Requires at least: 3.5
-Tested up to: 6.3
-Stable tag: 0.7
+Tested up to: 6.6
+Stable tag: 0.8
 
 
 == Description ==
@@ -27,6 +27,9 @@ Addon for Paid Memberships Pro that will include a validation link in the confir
 
   
 == Changelog ==
+= 0.8 - 2024-07-18 =
+* ENHANCEMENT: Updated the frontend UI for compatibility with PMPro v3.1. #53 (@dparker1005, @kimcoleman)
+
 = 0.7 - 2023-08-21 =
 * ENHANCEMENT: Improved integration with BuddyPress directories when using the PMPro BuddyPress Add On. #46 (@JarrydLong)
 * ENHANCEMENT: Updating `<h3>` tags to `<h2>` tags for better accessibility. #51 (@michaelbeil)
