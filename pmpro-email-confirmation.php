@@ -23,9 +23,14 @@
  */
 
 function pmproec_load_plugin_text_domain() {
-	load_plugin_textdomain( 'pmpro-email-confirmation', false, basename( dirname( __FILE__ ) ) . '/languages' ); 
+	load_plugin_textdomain( 'pmpro-email-confirmation', false, basename( dirname( __FILE__ ) ) . '/languages' );
+	if ( class_exists( 'PMPro_Email_Template' ) ) {
+		include_once( dirname( __FILE__ ) . '/classes/email-templates/class-pmpro-email-template-pmpro-email-confirmation-resend-confirmation.php' );
+	} else {
+		add_filter( 'pmproet_templates', 'pmproec_email_templates', 10, 1 );
+	}
 }
-add_action( 'init', 'pmproec_load_plugin_text_domain' ); 
+add_action( 'init', 'pmproec_load_plugin_text_domain', 8 );
 
 /*
 	Add checkbox to edit level page to set if level requires email confirmation.
@@ -412,50 +417,56 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 			return;
 		}
 
-		$body = file_get_contents( dirname( __FILE__ ) . "/email/resend_confirmation.html" );
+		$url = home_url( "?ui=" . $user->ID . "&validate=" . $validated );
 
 		//filter to allow additional query arguments.
 		$pmpro_query_args = apply_filters( 'pmproec_query_args', array() );
 
-		$url = home_url( "?ui=" . $user->ID . "&validate=" . $validated );
-
 		//add query arguments to the URL (on top of existing args)
-		$url = ( add_query_arg(
-			$pmpro_query_args,
-			$url
-			));
+		$url = ( add_query_arg( $pmpro_query_args, $url ) );
 
-		if ( empty( $validated ) || $validated != "validated" ) {
+		//This is a flag to check if the email was sent successfully or not to show the success message.
+		$mail_sent_successfully = false;
 
-			//use validation_link substitute?
-			if ( false === stripos( $body, "!!validation_link!!" ) ) {
-				$body = "<p><strong>" . esc_html__("IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated", "pmpro-email-confirmation") . ":<br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
-			} else {
-				$body = str_ireplace( "!!validation_link!!", $url, $body );
+		if ( class_exists( 'PMPro_Email_Template' ) ) {
+			$send_resend_confirmation_email	= new PMPro_Email_Template_Resend_Confirmation( $user, $url );
+			$mail_sent_successfully = $send_resend_confirmation_email->send();
+		} else {
+			$body = file_get_contents( dirname( __FILE__ ) . "/email/resend_confirmation.html" );
+
+			if ( empty( $validated ) || $validated != "validated" ) {
+
+				//use validation_link substitute?
+				if ( false === stripos( $body, "!!validation_link!!" ) ) {
+					$body = "<p><strong>" . esc_html__("IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated", "pmpro-email-confirmation") . ":<br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
+				} else {
+					$body = str_ireplace( "!!validation_link!!", $url, $body );
+				}
+
+				//Setup the new email.
+				$pmpro_email = new PMProEmail();
+				//Setup the email data
+				$pmpro_email->body = $body;
+				$pmpro_email->subject = esc_html__( 'Confirm Your Email Address', 'pmpro-email-confirmation' );
+				$pmpro_email->email = $user->user_email;
+				$pmpro_email->data = array(
+					"display_name"          => $user->display_name,
+					"user_login"			=> $user->user_login,
+					"user_email"            => $user->user_email,
+					"sitename"              => get_option( "blogname" ),
+					"siteemail"             => get_option( "pmpro_from_email" ),
+					"login_link"            => wp_login_url(),
+					"validation_link"		=> $url
+				);
+				$pmpro_email->template = 'resend_confirmation';
+				$mail_sent_successfully = $pmpro_email->sendEmail();
 			}
 
-			//Setup the new email.
-			$pmpro_email = new PMProEmail();
-			//Setup the email data
-			$pmpro_email->body = $body;
-			$pmpro_email->subject = esc_html__( 'Confirm Your Email Address', 'pmpro-email-confirmation' );
-			$pmpro_email->email = $user->user_email;
-			$pmpro_email->data = array( 
-				"display_name"          => $user->display_name,
-				"user_login"			=> $user->user_login,
-				"user_email"            => $user->user_email,
-				"sitename"              => get_option( "blogname" ),
-				"siteemail"             => get_option( "pmpro_from_email" ),
-				"login_link"            => wp_login_url(),
-				"validation_link"		=> $url
-			);
-			$pmpro_email->template = 'resend_confirmation';
-			$pmpro_email->sendEmail();
-
-			$pmproec_msg = esc_html__( 'A confirmation email has been sent to', 'pmpro-email-confirmation' ) . ' ' . $user->user_email;
-			$pmproec_msgt = 'updated';
+			if ( $mail_sent_successfully ) {
+				$pmproec_msg = esc_html__( 'A confirmation email has been sent to', 'pmpro-email-confirmation' ) . ' ' . $user->user_email;
+				$pmproec_msgt = 'updated';
+			}
 		}
-
 }
 
 /**
@@ -746,7 +757,6 @@ function pmproec_email_templates( $templates ) {
 	return $templates;
 
 }
-add_filter( 'pmproet_templates', 'pmproec_email_templates', 10, 1 );
 
 function pmproec_add_email_template( $templates, $page_name, $type = 'emails', $where = 'local', $ext = 'html' ) {
 	$templates[] = dirname(__FILE__) . "/email/resend_confirmation.html";
