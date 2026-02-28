@@ -43,6 +43,12 @@ function pmproec_pmpro_membership_level_after_other_settings() {
 
 ?>
 <h2 class="topborder"><?php esc_html_e( 'Email Confirmation', 'pmpro-email-confirmation' ); ?></h2>
+<p>
+	<?php
+	$email_confirmation_link = '<a title="' . esc_attr__( 'Email Confirmation Add On', 'pmpro-email-confirmation' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/?utm_source=plugin&utm_medium=pmpro-email-confirmation&utm_campaign=add-ons&utm_content=&utm_term=">' . esc_html__( 'Email Confirmation', 'pmpro-email-confirmation' ) . '</a>';
+	printf( esc_html__( 'Learn more about %s.', 'pmpro-email-confirmation' ), $email_confirmation_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	?>
+</p>
 <table>
 <tbody class="form-table">
 	<tr>
