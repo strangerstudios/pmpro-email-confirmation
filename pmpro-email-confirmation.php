@@ -42,11 +42,18 @@ function pmproec_pmpro_membership_level_after_other_settings() {
 	}
 
 ?>
-<h2 class="topborder"><?php esc_html_e( 'Email Confirmation', 'pmpro-email-confirmation' ); ?></h2>
+<hr />
+<h2><?php esc_html_e( 'Email Confirmation', 'pmpro-email-confirmation' ); ?></h2>
+<p>
+	<?php
+	$email_confirmation_link = '<a title="' . esc_attr__( 'Email Confirmation Add On Documentation', 'pmpro-email-confirmation' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/?utm_source=plugin&utm_medium=pmpro-email-confirmation&utm_campaign=add-ons">' . esc_html__( 'Email Confirmation Add On', 'pmpro-email-confirmation' ) . '</a>';
+	printf( esc_html__( 'Learn more about the %s.', 'pmpro-email-confirmation' ), $email_confirmation_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	?>
+</p>
 <table>
 <tbody class="form-table">
 	<tr>
-		<th scope="row" valign="top"><label for="email_confirmation"><?php esc_html_e('Email Confirmation', 'pmpro-email-confirmation');?>:</label></th>
+		<th scope="row" valign="top"><label for="email_confirmation"><?php esc_html_e('Email Confirmation', 'pmpro-email-confirmation');?></label></th>
 
 		<td>
 			<input type="checkbox" id="email_confirmation" name="email_confirmation" value="1" <?php checked($email_confirmation, 1);?> />
@@ -54,7 +61,7 @@ function pmproec_pmpro_membership_level_after_other_settings() {
 		</td>
 	</tr>
 	<tr id="pmproec_reset_confirmation" <?php if(!$email_confirmation){ ?> style="display:none;" <?php } ?> >
-	<th scope="row" valign="top"><label for="reset_email_confirmation"><?php esc_html_e('Reset Email Confirmation', 'pmpro-email-confirmation');?>:</label></th>
+	<th scope="row" valign="top"><label for="reset_email_confirmation"><?php esc_html_e('Reset Email Confirmation', 'pmpro-email-confirmation');?></label></th>
 		<td>
 			<input type="checkbox" id="reset_email_confirmation" name="reset_email_confirmation" value="1" <?php checked($reset_email_confirmation, 1);?> />
 			<label for="reset_email_confirmation"><?php esc_html_e('Check this to require email validation when a user updates their email address', 'pmpro-email-confirmation');?>.</label>
