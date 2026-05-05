@@ -3,8 +3,8 @@
 Contributors: strangerstudios, messica
 Tags: pmpro, paid memberships pro, email, confirmation, validate, validation, confirm, customize, member, membership, subscription, addon
 Requires at least: 3.5
-Tested up to: 6.6
-Stable tag: 0.8
+Tested up to: 6.9
+Stable tag: 0.9
 
 
 == Description ==
@@ -16,17 +16,20 @@ Addon for Paid Memberships Pro that will include a validation link in the confir
 3. Edit your Paid Memberships Pro levels and check the "require email validation for this level" checkbox.
 
 == Frequently Asked Questions ==
+
 = I found a bug in the plugin. =
-  * Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/strangerstudios/pmpro-email-confirmation/issues
 
-= How do I manually validate a user's email address? =
-  * Find the user in the Users list or Members List in your WP dashboard, hover over their username in the list and click "Validate User".
+Please post it in the GitHub issue tracker here: https://github.com/strangerstudios/pmpro-email-confirmation/issues
 
-= How do I submit a translation for next release =
-* Please add your .po and .mo files to the languages folder and create a pull request (https://github.com/strangerstudios/pmpro-email-confirmation/pulls) or reach out to www.paidmembershipspro.com/contact
+= I need help installing, configuring, or customizing the plugin. =
 
-  
+Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
+
 == Changelog ==
+= 0.9 - 2026-05-05 =
+* ENHANCEMENT: Added a link to the Email Confirmation Add On documentation on the Edit Membership Level page and removed colons from the field labels. #59 (@kimcoleman)
+* DEPRECATED: Removed bundled translation files to reduce the shipped plugin package size.
+
 = 0.8 - 2024-07-18 =
 * ENHANCEMENT: Updated the frontend UI for compatibility with PMPro v3.1. #53 (@dparker1005, @kimcoleman)
 

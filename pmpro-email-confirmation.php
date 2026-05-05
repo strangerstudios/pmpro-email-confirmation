@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Email Confirmation Add On
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/
  * Description: Require email confirmation before certain levels are enabled for members.
- * Version: 0.8
+ * Version: 0.9
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com/
  * Text Domain: pmpro-email-confirmation
@@ -585,7 +585,7 @@ add_filter( 'pmpro_bp_directory_sql_parts', 'pmproec_buddypress_sql', 10, 2 );
 /**
  * Filter the header message for the no access message.
  *
- * @since TBD
+ * @since 0.9
  *
  * @param string $header The header message for the no access message.
  * @return string The filtered header message for the no access message.
