@@ -223,7 +223,7 @@ function pmproec_pmpro_has_membership_level( $haslevel, $user_id, $levels ) {
 	}
 
 	// If the user is trying to cancel, let them.
-	if ( is_page( $pmpro_pages['cancel'] ) ) {
+	if ( ! empty( $pmpro_pages['cancel'] ) && is_page( $pmpro_pages['cancel'] ) ) {
 		return $haslevel;
 	}
 	
@@ -471,7 +471,7 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
  */
 function pmproec_show_account_email_notification( $content ) {
 	global $pmproec_msg, $pmproec_msgt, $pmpro_pages;
-	if ( ! empty( $pmproec_msg ) && is_page( $pmpro_pages['account'] ) ) {
+	if ( ! empty( $pmproec_msg ) && ! empty( $pmpro_pages['account'] ) && is_page( $pmpro_pages['account'] ) ) {
 		$new_content = "<div class='pmpro_message pmpro_success'><p>" . esc_html( $pmproec_msg ) . "</p></div>";
 		$new_content .= $content;
 		$content = $new_content;
