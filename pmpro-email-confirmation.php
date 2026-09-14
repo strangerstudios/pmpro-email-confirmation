@@ -433,6 +433,12 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 		}
 
 		$user = get_user_by( 'ID', $user_id );
+
+		// Nothing to send if we do not have a real user, e.g. a logged out visitor hitting the resend URL.
+		if ( empty( $user ) ) {
+			return;
+		}
+
 		$validated = $user->pmpro_email_confirmation_key;
 
 		//Do not go any further if user is validated.
@@ -792,8 +798,12 @@ function pmproec_add_email_template( $templates, $page_name, $type = 'emails', $
  *
  * If a site customized the template body and removed the link variable, the
  * member would receive an email with no way to confirm. Prepend the link in
- * that case. Runs before PMPro replaces template variables, so check for the
- * variable name rather than the rendered URL.
+ * that case.
+ *
+ * This filter runs after PMPro has substituted !!variable!! placeholders but
+ * before it renders liquid syntax, so a legacy body already contains the URL
+ * while a liquid body still contains {{ validation_link }}. Both checks are
+ * required.
  *
  * @since TBD
  *
@@ -806,7 +816,8 @@ function pmproec_ensure_validation_link_in_resend_email( $body, $email ) {
 		return $body;
 	}
 
-	if ( false !== stripos( $body, 'validation_link' ) || false !== strpos( $body, $email->data['validation_link'] ) ) {
+	$has_variable = (bool) preg_match( '/!!validation_link!!|\{\{\s*validation_link\s*\}\}/i', $body );
+	if ( $has_variable || false !== strpos( $body, $email->data['validation_link'] ) ) {
 		return $body;
 	}
 
