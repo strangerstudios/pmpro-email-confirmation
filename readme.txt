@@ -4,7 +4,7 @@ Contributors: strangerstudios, messica
 Tags: pmpro, paid memberships pro, email, confirmation, validate, validation, confirm, customize, member, membership, subscription, addon
 Requires at least: 3.5
 Tested up to: 6.9
-Stable tag: 1.0
+Stable tag: 0.9
 
 
 == Description ==
@@ -26,13 +26,6 @@ Please post it in the GitHub issue tracker here: https://github.com/strangerstud
 Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
-= 1.0 - 2026-06-03 =
-* ENHANCEMENT: Added dedicated "Email Confirmation" panel to the Edit Member screen (PMPro 3.0+) with status display and admin actions. #60
-* ENHANCEMENT: Added "Email Confirmed" status column to Members List and Users list for at-a-glance status visibility. #60
-* ENHANCEMENT: Row actions now only appear for members whose levels actually require confirmation. #60
-* ENHANCEMENT: "Validated" status in row actions is now properly localized. #60
-* BUG FIX: Fixed copy-pasted error message "Could not reset sessions" to correctly read "Could not validate user". #60
-
 = 0.9 - 2026-05-05 =
 * ENHANCEMENT: Added a link to the Email Confirmation Add On documentation on the Edit Membership Level page and removed colons from the field labels. #59 (@kimcoleman)
 * DEPRECATED: Removed bundled translation files to reduce the shipped plugin package size.

@@ -2,7 +2,7 @@
 /**
  * Email Confirmation panel for Edit Member screen
  *
- * @since 1.0
+ * @since TBD
  */
 class PMProEC_Member_Edit_Panel_Email_Confirmation extends PMPro_Member_Edit_Panel {
 	/**
@@ -23,16 +23,16 @@ class PMProEC_Member_Edit_Panel_Email_Confirmation extends PMPro_Member_Edit_Pan
 		// Get confirmation key
 		$validation_key = get_user_meta( $user->ID, 'pmpro_email_confirmation_key', true );
 
-		// Determine status
+		// Determine status. Uses core's .pmpro_tag classes so the badges match the rest of PMPro's admin.
 		if ( empty( $validation_key ) ) {
 			$status = __( 'Not Required', 'pmpro-email-confirmation' );
-			$status_class = 'not-required';
+			$status_class = 'pmpro_tag pmpro_tag-info';
 		} elseif ( $validation_key === 'validated' ) {
 			$status = __( 'Confirmed', 'pmpro-email-confirmation' );
-			$status_class = 'confirmed';
+			$status_class = 'pmpro_tag pmpro_tag-has_icon pmpro_tag-success';
 		} else {
 			$status = __( 'Pending', 'pmpro-email-confirmation' );
-			$status_class = 'pending';
+			$status_class = 'pmpro_tag pmpro_tag-has_icon pmpro_tag-alert';
 		}
 
 		// Get member's levels
@@ -58,7 +58,7 @@ class PMProEC_Member_Edit_Panel_Email_Confirmation extends PMPro_Member_Edit_Pan
 						<label><?php esc_html_e( 'Status', 'pmpro-email-confirmation' ); ?></label>
 					</th>
 					<td>
-						<span class="pmpro-email-confirmation-status <?php echo esc_attr( $status_class ); ?>">
+						<span class="<?php echo esc_attr( $status_class ); ?>">
 							<?php echo esc_html( $status ); ?>
 						</span>
 					</td>
@@ -77,7 +77,7 @@ class PMProEC_Member_Edit_Panel_Email_Confirmation extends PMPro_Member_Edit_Pan
 							<label><?php esc_html_e( 'Levels Requiring Confirmation', 'pmpro-email-confirmation' ); ?></label>
 						</th>
 						<td>
-							<ul>
+							<ul class="ul-disc">
 								<?php foreach ( $confirmation_required_levels as $level ) { ?>
 									<li><?php echo esc_html( $level->name ); ?></li>
 								<?php } ?>
@@ -91,7 +91,7 @@ class PMProEC_Member_Edit_Panel_Email_Confirmation extends PMPro_Member_Edit_Pan
 							<label><?php esc_html_e( 'Levels Not Requiring Confirmation', 'pmpro-email-confirmation' ); ?></label>
 						</th>
 						<td>
-							<ul>
+							<ul class="ul-disc">
 								<?php foreach ( $confirmation_not_required_levels as $level ) { ?>
 									<li><?php echo esc_html( $level->name ); ?></li>
 								<?php } ?>
@@ -138,53 +138,38 @@ class PMProEC_Member_Edit_Panel_Email_Confirmation extends PMPro_Member_Edit_Pan
 	 * Save the panel.
 	 */
 	public function save() {
-		// Check nonce
-		if ( ! isset( $_POST['pmpro_member_edit_saved_panel_nonce'] ) ||
-		     ! wp_verify_nonce( $_POST['pmpro_member_edit_saved_panel_nonce'], 'pmpro_member_edit_saved_panel_' . $this->slug ) ) {
-			return;
-		}
-
-		// Check capability
-		$cap = apply_filters( 'pmproec_validate_user_cap', 'edit_users' );
-		if ( ! current_user_can( $cap ) ) {
-			return;
-		}
-
-		$user = self::get_user();
-		$user_id = $user->ID;
+		// Core has already verified the panel nonce and the edit member capability before calling save().
+		$user_id = self::get_user()->ID;
 
 		// Handle validate now action
 		if ( isset( $_POST['pmproec_validate_now'] ) ) {
+			$validation_key = get_user_meta( $user_id, 'pmpro_email_confirmation_key', true );
 			update_user_meta( $user_id, 'pmpro_email_confirmation_key', 'validated' );
 
-			// Activate membership if they have pending membership that was awaiting confirmation
-			$level_id = get_user_meta( $user_id, 'pmpro_email_confirmation_pending_level_id', true );
-			if ( ! empty( $level_id ) ) {
-				do_action( 'pmproec_activation', $user_id, $level_id );
-				delete_user_meta( $user_id, 'pmpro_email_confirmation_pending_level_id' );
-			}
+			// Fire the same hook as a confirmation link click so integrations see admin validations too.
+			do_action( 'pmproec_after_validate_user', $user_id, $validation_key );
 
-			pmpro_add_message( __( 'User has been validated.', 'pmpro-email-confirmation' ), 'success' );
+			pmpro_setMessage( __( 'User has been validated.', 'pmpro-email-confirmation' ), 'pmpro_success' );
 		}
 
 		// Handle resend email action
 		if ( isset( $_POST['pmproec_resend_email'] ) ) {
 			pmproec_resend_confirmation_email( $user_id );
-			pmpro_add_message( __( 'Confirmation email has been resent.', 'pmpro-email-confirmation' ), 'success' );
+			pmpro_setMessage( __( 'Confirmation email has been resent.', 'pmpro-email-confirmation' ), 'pmpro_success' );
 		}
 
 		// Handle require re-confirmation action
 		if ( isset( $_POST['pmproec_require_reconfirmation'] ) ) {
 			pmproec_generateNewKey( $user_id );
 			pmproec_resend_confirmation_email( $user_id );
-			pmpro_add_message( __( 'A new confirmation key has been generated and the confirmation email has been sent.', 'pmpro-email-confirmation' ), 'success' );
+			pmpro_setMessage( __( 'A new confirmation key has been generated and the confirmation email has been sent.', 'pmpro-email-confirmation' ), 'pmpro_success' );
 		}
 
 		// Handle send confirmation action (for users who never had one)
 		if ( isset( $_POST['pmproec_send_confirmation'] ) ) {
 			pmproec_generateNewKey( $user_id );
 			pmproec_resend_confirmation_email( $user_id );
-			pmpro_add_message( __( 'Confirmation email has been sent.', 'pmpro-email-confirmation' ), 'success' );
+			pmpro_setMessage( __( 'Confirmation email has been sent.', 'pmpro-email-confirmation' ), 'pmpro_success' );
 		}
 	}
 
@@ -199,25 +184,11 @@ class PMProEC_Member_Edit_Panel_Email_Confirmation extends PMPro_Member_Edit_Pan
 
 		$user = self::get_user();
 
-		// Always show if user doesn't exist yet (creating new user)
+		// Don't show when creating a new user, since there is no user ID yet.
 		if ( empty( $user->ID ) ) {
 			return false;
 		}
 
-		// Get member's levels
-		$member_levels = pmpro_getMembershipLevelsForUser( $user->ID );
-
-		if ( empty( $member_levels ) ) {
-			return false;
-		}
-
-		// Check if any level requires confirmation
-		foreach ( $member_levels as $level ) {
-			if ( pmproec_isEmailConfirmationLevel( $level->id ) ) {
-				return true;
-			}
-		}
-
-		return false;
+		return pmproec_user_requires_confirmation( $user->ID );
 	}
 }

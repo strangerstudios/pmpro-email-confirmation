@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Email Confirmation Add On
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/
  * Description: Require email confirmation before certain levels are enabled for members.
- * Version: 1.0
+ * Version: 0.9
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com/
  * Text Domain: pmpro-email-confirmation
@@ -26,28 +26,6 @@ function pmproec_load_plugin_text_domain() {
 	load_plugin_textdomain( 'pmpro-email-confirmation', false, basename( dirname( __FILE__ ) ) . '/languages' );
 }
 add_action( 'init', 'pmproec_load_plugin_text_domain' );
-
-/**
- * Enqueue admin styles.
- */
-function pmproec_enqueue_admin_styles() {
-	// Only load on relevant admin pages
-	$screen = get_current_screen();
-	if ( ! $screen ) {
-		return;
-	}
-
-	// Load on users.php, pmpro-memberslist, and pmpro-member (Edit Member) pages
-	if ( in_array( $screen->id, array( 'users', 'memberships_page_pmpro-memberslist', 'memberships_page_pmpro-member' ) ) ) {
-		wp_enqueue_style(
-			'pmpro-email-confirmation-admin',
-			plugins_url( 'css/admin.css', __FILE__ ),
-			array(),
-			'1.0'
-		);
-	}
-}
-add_action( 'admin_enqueue_scripts', 'pmproec_enqueue_admin_styles' );
 
 /**
  * Include the Member Edit Panel class if PMPro 3.0+ is active.
@@ -541,20 +519,8 @@ function pmproec_user_row_actions( $actions, $user ) {
 		//check if they still have a validation key
 		$validation_key = get_user_meta( $user->ID, "pmpro_email_confirmation_key", true );
 
-		// Check if any of the user's levels actually require confirmation
-		$member_levels = pmpro_getMembershipLevelsForUser( $user->ID );
-		$requires_confirmation = false;
-		if ( ! empty( $member_levels ) ) {
-			foreach ( $member_levels as $level ) {
-				if ( pmproec_isEmailConfirmationLevel( $level->id ) ) {
-					$requires_confirmation = true;
-					break;
-				}
-			}
-		}
-
-		// Only show actions if at least one level requires confirmation
-		if ( ! $requires_confirmation ) {
+		// Only show actions if at least one of the user's levels requires confirmation.
+		if ( ! pmproec_user_requires_confirmation( $user->ID ) ) {
 			return $actions;
 		}
 
@@ -831,6 +797,39 @@ function pmproec_add_email_template( $templates, $page_name, $type = 'emails', $
 add_filter( 'pmpro_email_custom_template_path', 'pmproec_add_email_template', 10, 5 );
 
 /**
+ * Check whether any of a user's current membership levels require email confirmation.
+ *
+ * Cached per request because the list views call this once per row.
+ *
+ * @since TBD
+ *
+ * @param int $user_id The user ID to check.
+ * @return bool True if at least one of the user's levels requires confirmation.
+ */
+function pmproec_user_requires_confirmation( $user_id ) {
+	static $cache = array();
+
+	$user_id = (int) $user_id;
+	if ( isset( $cache[ $user_id ] ) ) {
+		return $cache[ $user_id ];
+	}
+
+	$requires_confirmation = false;
+	$member_levels = pmpro_getMembershipLevelsForUser( $user_id );
+	if ( ! empty( $member_levels ) ) {
+		foreach ( $member_levels as $level ) {
+			if ( pmproec_isEmailConfirmationLevel( $level->id ) ) {
+				$requires_confirmation = true;
+				break;
+			}
+		}
+	}
+
+	$cache[ $user_id ] = $requires_confirmation;
+	return $requires_confirmation;
+}
+
+/**
  * Add Email Confirmation status column to Members List.
  *
  * @param array $columns Array of columns to show on the Members List.
@@ -859,30 +858,18 @@ function pmproec_members_list_column_value( $column_name, $user_id ) {
 	if ( $column_name === 'email_confirmation' ) {
 		$validation_key = get_user_meta( $user_id, 'pmpro_email_confirmation_key', true );
 
-		// Check if any of the user's levels require confirmation
-		$member_levels = pmpro_getMembershipLevelsForUser( $user_id );
-		$requires_confirmation = false;
-		if ( ! empty( $member_levels ) ) {
-			foreach ( $member_levels as $level ) {
-				if ( pmproec_isEmailConfirmationLevel( $level->id ) ) {
-					$requires_confirmation = true;
-					break;
-				}
-			}
-		}
-
-		// Don't show anything if confirmation is not required for any level
-		if ( ! $requires_confirmation ) {
+		// Don't show anything if confirmation is not required for any of the user's levels.
+		if ( ! pmproec_user_requires_confirmation( $user_id ) ) {
 			echo '—';
 			return;
 		}
 
 		if ( empty( $validation_key ) ) {
-			echo '<span class="pmpro-email-confirmation-status not-required">—</span>';
+			echo '—';
 		} elseif ( $validation_key === 'validated' ) {
-			echo '<span class="pmpro-email-confirmation-status confirmed">' . esc_html__( 'Confirmed', 'pmpro-email-confirmation' ) . '</span>';
+			echo '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-success">' . esc_html__( 'Confirmed', 'pmpro-email-confirmation' ) . '</span>';
 		} else {
-			echo '<span class="pmpro-email-confirmation-status pending">' . esc_html__( 'Pending', 'pmpro-email-confirmation' ) . '</span>';
+			echo '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-alert">' . esc_html__( 'Pending', 'pmpro-email-confirmation' ) . '</span>';
 		}
 	}
 }
@@ -919,29 +906,17 @@ function pmproec_users_list_column_value( $output, $column_name, $user_id ) {
 	if ( $column_name === 'email_confirmation' ) {
 		$validation_key = get_user_meta( $user_id, 'pmpro_email_confirmation_key', true );
 
-		// Check if any of the user's levels require confirmation
-		$member_levels = pmpro_getMembershipLevelsForUser( $user_id );
-		$requires_confirmation = false;
-		if ( ! empty( $member_levels ) ) {
-			foreach ( $member_levels as $level ) {
-				if ( pmproec_isEmailConfirmationLevel( $level->id ) ) {
-					$requires_confirmation = true;
-					break;
-				}
-			}
-		}
-
-		// Don't show anything if confirmation is not required for any level
-		if ( ! $requires_confirmation ) {
+		// Don't show anything if confirmation is not required for any of the user's levels.
+		if ( ! pmproec_user_requires_confirmation( $user_id ) ) {
 			return '—';
 		}
 
 		if ( empty( $validation_key ) ) {
-			return '<span class="pmpro-email-confirmation-status not-required">—</span>';
+			return '—';
 		} elseif ( $validation_key === 'validated' ) {
-			return '<span class="pmpro-email-confirmation-status confirmed">' . esc_html__( 'Confirmed', 'pmpro-email-confirmation' ) . '</span>';
+			return '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-success">' . esc_html__( 'Confirmed', 'pmpro-email-confirmation' ) . '</span>';
 		} else {
-			return '<span class="pmpro-email-confirmation-status pending">' . esc_html__( 'Pending', 'pmpro-email-confirmation' ) . '</span>';
+			return '<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-alert">' . esc_html__( 'Pending', 'pmpro-email-confirmation' ) . '</span>';
 		}
 	}
 	return $output;
