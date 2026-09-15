@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Email Confirmation Add On
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/email-confirmation-add-on/
  * Description: Require email confirmation before certain levels are enabled for members.
- * Version: 0.9
+ * Version: 1.0
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com/
  * Text Domain: pmpro-email-confirmation
@@ -60,7 +60,7 @@ add_filter( 'pmpro_member_edit_panels', 'pmproec_register_member_edit_panel' );
  * name, description, variable list, and test email button on the Email Templates
  * settings page. Older versions of PMPro use the legacy template filters.
  *
- * @since TBD
+ * @since 1.0
  */
 function pmproec_init_email_templates() {
 	if ( class_exists( 'PMPro_Email_Template' ) ) {
@@ -843,7 +843,7 @@ function pmproec_add_email_template( $templates, $page_name, $type = 'emails', $
  * while a liquid body still contains {{ validation_link }}. Both checks are
  * required.
  *
- * @since TBD
+ * @since 1.0
  *
  * @param string     $body  The email body.
  * @param PMProEmail $email The email being sent.
@@ -869,7 +869,7 @@ add_filter( 'pmpro_email_body', 'pmproec_ensure_validation_link_in_resend_email'
  *
  * Cached per request because the list views call this once per row.
  *
- * @since TBD
+ * @since 1.0
  *
  * @param int $user_id The user ID to check.
  * @return bool True if at least one of the user's levels requires confirmation.

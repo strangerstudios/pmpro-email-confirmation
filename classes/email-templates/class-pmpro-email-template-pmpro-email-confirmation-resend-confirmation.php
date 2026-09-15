@@ -2,7 +2,7 @@
 /**
  * Email template for the "resend confirmation" email sent by the Email Confirmation Add On.
  *
- * @since TBD
+ * @since 1.0
  */
 class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Template {
 
@@ -23,7 +23,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 	/**
 	 * Constructor.
 	 *
-	 * @since TBD
+	 * @since 1.0
 	 *
 	 * @param WP_User $user            The user who needs to confirm their email address.
 	 * @param string  $validation_link The link the user must visit to confirm their email address.
@@ -39,7 +39,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 	 * Kept as "resend_confirmation" so subjects and bodies that sites saved
 	 * through the legacy template editor continue to apply.
 	 *
-	 * @since TBD
+	 * @since 1.0
 	 *
 	 * @return string The email template slug.
 	 */
@@ -50,7 +50,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 	/**
 	 * Get the "nice name" of the email template.
 	 *
-	 * @since TBD
+	 * @since 1.0
 	 *
 	 * @return string The "nice name" of the email template.
 	 */
@@ -61,7 +61,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 	/**
 	 * Get "help text" to display to the admin when editing the email template.
 	 *
-	 * @since TBD
+	 * @since 1.0
 	 *
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
@@ -72,7 +72,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 	/**
 	 * Get the default subject for the email.
 	 *
-	 * @since TBD
+	 * @since 1.0
 	 *
 	 * @return string The default subject for the email.
 	 */
@@ -83,7 +83,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 	/**
 	 * Get the default body content for the email.
 	 *
-	 * @since TBD
+	 * @since 1.0
 	 *
 	 * @return string The default body content for the email.
 	 */
@@ -98,7 +98,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 	/**
 	 * Get the email template variables for the email paired with a description of the variable.
 	 *
-	 * @since TBD
+	 * @since 1.0
 	 *
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
@@ -123,7 +123,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 	/**
 	 * Get the email template variables for the email.
 	 *
-	 * @since TBD
+	 * @since 1.0
 	 *
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
@@ -139,7 +139,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 	/**
 	 * Get the email address to send the email to.
 	 *
-	 * @since TBD
+	 * @since 1.0
 	 *
 	 * @return string The email address to send the email to.
 	 */
@@ -150,7 +150,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 	/**
 	 * Get the name of the email recipient.
 	 *
-	 * @since TBD
+	 * @since 1.0
 	 *
 	 * @return string The name of the email recipient.
 	 */
@@ -161,7 +161,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 	/**
 	 * Returns the arguments used to send a test email from the email templates settings page.
 	 *
-	 * @since TBD
+	 * @since 1.0
 	 *
 	 * @return array The constructor arguments for a test email.
 	 */
@@ -175,7 +175,7 @@ class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Templ
 /**
  * Register the email template with PMPro.
  *
- * @since TBD
+ * @since 1.0
  *
  * @param array $email_templates The email templates (template slug => email template class name).
  * @return array The modified email templates array.

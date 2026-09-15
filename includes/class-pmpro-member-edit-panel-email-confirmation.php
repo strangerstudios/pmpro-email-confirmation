@@ -2,7 +2,7 @@
 /**
  * Email Confirmation panel for Edit Member screen
  *
- * @since TBD
+ * @since 1.0
  */
 class PMProEC_Member_Edit_Panel_Email_Confirmation extends PMPro_Member_Edit_Panel {
 	/**

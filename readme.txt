@@ -3,8 +3,8 @@
 Contributors: strangerstudios, messica
 Tags: pmpro, paid memberships pro, email, confirmation, validate, validation, confirm, customize, member, membership, subscription, addon
 Requires at least: 3.5
-Tested up to: 6.9
-Stable tag: 0.9
+Tested up to: 7.1
+Stable tag: 1.0
 
 
 == Description ==
@@ -26,6 +26,16 @@ Please post it in the GitHub issue tracker here: https://github.com/strangerstud
 Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= 1.0 - 2026-09-15 =
+* SECURITY: The email confirmation key is now compared with a timing-safe check and the user ID is validated before use. Resending a confirmation email from the account page now requires a logged in user and a valid nonce. #62 (@flintfromthebasement)
+* FEATURE: Added an "Email Confirmation" panel to the Edit Member screen on PMPro 3.0+ showing the member's confirmation status, email address, and which of their levels require confirmation, with actions to validate the member, resend the confirmation email, require re-confirmation, or send a first confirmation email. #61 (@flintfromthebasement)
+* FEATURE: Added an "Email Confirmed" column to the Members List and the Users list. The column can be hidden from Screen Options. #61 (@flintfromthebasement)
+* ENHANCEMENT: The resend confirmation email is now registered as a PMPro email template class on PMPro 3.4+, so it has a name, description, and variable list on the Email Templates settings page, supports the test email button on PMPro 3.5+, and uses liquid syntax on PMPro 3.7+. Existing customizations to the template are preserved. #64 (@dparker1005)
+* ENHANCEMENT: Validating a member from the Edit Member screen now fires the `pmproec_after_validate_user` action, matching validation through the confirmation link. #61 (@dparker1005)
+* ENHANCEMENT: The validate and resend row actions on the Users list and Members List now only appear for members whose levels require confirmation, and the "Validated" label is now translatable. #61 (@flintfromthebasement)
+* BUG FIX: Fixed PHP warnings when `$pmpro_pages` was not yet populated, such as during REST or AJAX requests. #63 (@dwanjuki)
+* BUG FIX: Corrected the error message shown when validating a user who could not be found. #61 (@flintfromthebasement)
+
 = 0.9 - 2026-05-05 =
 * ENHANCEMENT: Added a link to the Email Confirmation Add On documentation on the Edit Membership Level page and removed colons from the field labels. #59 (@kimcoleman)
 * DEPRECATED: Removed bundled translation files to reduce the shipped plugin package size.
