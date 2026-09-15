@@ -295,10 +295,10 @@ add_filter( "pmpro_email_body", "pmproec_pmpro_email_body", 10, 2 );
  */
 function pmproec_init_validate() {
 	if ( ! empty( $_REQUEST['validate'] ) && ! empty( $_REQUEST['ui'] ) ) {
-		$validate = $_REQUEST['validate'];
-		$ui = $_REQUEST['ui'];
+		$validate = sanitize_text_field( wp_unslash( $_REQUEST['validate'] ) );
+		$ui = absint( $_REQUEST['ui'] );
 		$user = get_userdata( $ui );
-		if ( $validate == $user->pmpro_email_confirmation_key ) {
+		if ( ! empty( $user ) && ! empty( $user->pmpro_email_confirmation_key ) && 'validated' !== $user->pmpro_email_confirmation_key && hash_equals( (string) $user->pmpro_email_confirmation_key, (string) $validate ) ) {
 			//validate!
 			update_user_meta( $user->ID, "pmpro_email_confirmation_key", "validated" );
 
@@ -364,11 +364,13 @@ function pmproec_add_resend_email_link_to_account( $action_links, $level_id ) {
 		return $action_links;
 	}
 
-	// Add a nonce here.
-	$url = add_query_arg( 
-		array(
-			'resendconfirmation'	=>	1,
-		)
+	$url = wp_nonce_url(
+		add_query_arg(
+			array(
+				'resendconfirmation'	=>	1,
+			)
+		),
+		'pmproec_resend_confirmation'
 	);
 
 	// Add the "Resend Confirmation Email" action link.
@@ -392,7 +394,9 @@ function pmproec_resend_the_confirmation_email() {
 
 		pmproec_resend_confirmation_email( $user_id );
 
-	} elseif ( !empty( $_REQUEST['resendconfirmation'] ) ) {
+	} elseif ( !empty( $_REQUEST['resendconfirmation'] ) && is_user_logged_in() ) {
+		// Check the nonce.
+		check_admin_referer( 'pmproec_resend_confirmation' );
 
 		pmproec_resend_confirmation_email();	
 	}
