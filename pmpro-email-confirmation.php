@@ -27,6 +27,27 @@ function pmproec_load_plugin_text_domain() {
 }
 add_action( 'init', 'pmproec_load_plugin_text_domain' ); 
 
+/**
+ * Set up the resend confirmation email template.
+ *
+ * On PMPro 3.4+ the template is a PMPro_Email_Template class, which gives it a
+ * name, description, variable list, and test email button on the Email Templates
+ * settings page. Older versions of PMPro use the legacy template filters.
+ *
+ * @since TBD
+ */
+function pmproec_init_email_templates() {
+	if ( class_exists( 'PMPro_Email_Template' ) ) {
+		// Using PMPro v3.4+. Include the email template class.
+		include_once( dirname( __FILE__ ) . '/classes/email-templates/class-pmpro-email-template-pmpro-email-confirmation-resend-confirmation.php' );
+	} else {
+		// Using PMPro before v3.4. Register the template through the legacy filters.
+		add_filter( 'pmproet_templates', 'pmproec_email_templates', 10, 1 );
+		add_filter( 'pmpro_email_custom_template_path', 'pmproec_add_email_template', 10, 5 );
+	}
+}
+add_action( 'init', 'pmproec_init_email_templates', 8 ); // Priority 8 so the legacy filter is added before PMPro loads its email templates.
+
 /*
 	Add checkbox to edit level page to set if level requires email confirmation.
 */
@@ -416,14 +437,18 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 		}
 
 		$user = get_user_by( 'ID', $user_id );
+
+		// Nothing to send if we do not have a real user, e.g. a logged out visitor hitting the resend URL.
+		if ( empty( $user ) ) {
+			return;
+		}
+
 		$validated = $user->pmpro_email_confirmation_key;
 
 		//Do not go any further if user is validated.
 		if ( $validated == 'validated' ) {
 			return;
 		}
-
-		$body = file_get_contents( dirname( __FILE__ ) . "/email/resend_confirmation.html" );
 
 		//filter to allow additional query arguments.
 		$pmpro_query_args = apply_filters( 'pmproec_query_args', array() );
@@ -437,31 +462,39 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 			));
 
 		if ( empty( $validated ) || $validated != "validated" ) {
-
-			//use validation_link substitute?
-			if ( false === stripos( $body, "!!validation_link!!" ) ) {
-				$body = "<p><strong>" . esc_html__("IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated", "pmpro-email-confirmation") . ":<br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
+			if ( class_exists( 'PMPro_Email_Template_PMProEC_Resend_Confirmation' ) ) {
+				// PMPro v3.4+. Send through the registered email template class.
+				$pmpro_email = new PMPro_Email_Template_PMProEC_Resend_Confirmation( $user, $url );
+				$pmpro_email->send();
 			} else {
-				$body = str_ireplace( "!!validation_link!!", $url, $body );
-			}
+				// PMPro before v3.4. Build the email from the bundled template file.
+				$body = file_get_contents( dirname( __FILE__ ) . "/email/resend_confirmation.html" );
 
-			//Setup the new email.
-			$pmpro_email = new PMProEmail();
-			//Setup the email data
-			$pmpro_email->body = $body;
-			$pmpro_email->subject = esc_html__( 'Confirm Your Email Address', 'pmpro-email-confirmation' );
-			$pmpro_email->email = $user->user_email;
-			$pmpro_email->data = array( 
-				"display_name"          => $user->display_name,
-				"user_login"			=> $user->user_login,
-				"user_email"            => $user->user_email,
-				"sitename"              => get_option( "blogname" ),
-				"siteemail"             => get_option( "pmpro_from_email" ),
-				"login_link"            => wp_login_url(),
-				"validation_link"		=> $url
-			);
-			$pmpro_email->template = 'resend_confirmation';
-			$pmpro_email->sendEmail();
+				//use validation_link substitute?
+				if ( false === stripos( $body, "!!validation_link!!" ) ) {
+					$body = "<p><strong>" . esc_html__("IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated", "pmpro-email-confirmation") . ":<br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
+				} else {
+					$body = str_ireplace( "!!validation_link!!", $url, $body );
+				}
+
+				//Setup the new email.
+				$pmpro_email = new PMProEmail();
+				//Setup the email data
+				$pmpro_email->body = $body;
+				$pmpro_email->subject = esc_html__( 'Confirm Your Email Address', 'pmpro-email-confirmation' );
+				$pmpro_email->email = $user->user_email;
+				$pmpro_email->data = array( 
+					"display_name"          => $user->display_name,
+					"user_login"			=> $user->user_login,
+					"user_email"            => $user->user_email,
+					"sitename"              => get_option( "blogname" ),
+					"siteemail"             => get_option( "pmpro_from_email" ),
+					"login_link"            => wp_login_url(),
+					"validation_link"		=> $url
+				);
+				$pmpro_email->template = 'resend_confirmation';
+				$pmpro_email->sendEmail();
+			}
 
 			$pmproec_msg = esc_html__( 'A confirmation email has been sent to', 'pmpro-email-confirmation' ) . ' ' . $user->user_email;
 			$pmproec_msgt = 'updated';
@@ -757,14 +790,45 @@ function pmproec_email_templates( $templates ) {
 	return $templates;
 
 }
-add_filter( 'pmproet_templates', 'pmproec_email_templates', 10, 1 );
 
 function pmproec_add_email_template( $templates, $page_name, $type = 'emails', $where = 'local', $ext = 'html' ) {
 	$templates[] = dirname(__FILE__) . "/email/resend_confirmation.html";
 
 	return $templates;
 }
-add_filter( 'pmpro_email_custom_template_path', 'pmproec_add_email_template', 10, 5 );
+
+/**
+ * Make sure the resend confirmation email always contains the validation link.
+ *
+ * If a site customized the template body and removed the link variable, the
+ * member would receive an email with no way to confirm. Prepend the link in
+ * that case.
+ *
+ * This filter runs after PMPro has substituted !!variable!! placeholders but
+ * before it renders liquid syntax, so a legacy body already contains the URL
+ * while a liquid body still contains {{ validation_link }}. Both checks are
+ * required.
+ *
+ * @since TBD
+ *
+ * @param string     $body  The email body.
+ * @param PMProEmail $email The email being sent.
+ * @return string The email body, with the validation link added if it was missing.
+ */
+function pmproec_ensure_validation_link_in_resend_email( $body, $email ) {
+	if ( empty( $email->template ) || 'resend_confirmation' !== $email->template || empty( $email->data['validation_link'] ) ) {
+		return $body;
+	}
+
+	$has_variable = (bool) preg_match( '/!!validation_link!!|\{\{\s*validation_link\s*\}\}/i', $body );
+	if ( $has_variable || false !== strpos( $body, $email->data['validation_link'] ) ) {
+		return $body;
+	}
+
+	$url = esc_url( $email->data['validation_link'] );
+	return "<p><strong>" . esc_html__( 'IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated', 'pmpro-email-confirmation' ) . ":<br /><a href='" . $url . "'>" . $url . "</a></strong></p><hr />" . $body;
+}
+add_filter( 'pmpro_email_body', 'pmproec_ensure_validation_link_in_resend_email', 10, 2 );
 
 /**
  * Function to add links to the plugin row meta
