@@ -139,6 +139,7 @@ class PMProEC_Member_Edit_Panel_Email_Confirmation extends PMPro_Member_Edit_Pan
 	 */
 	public function save() {
 		// Core has already verified the panel nonce and the edit member capability before calling save().
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Verified in pmpro_member_edit_save() (adminpages/member-edit.php) before save() is called.
 		$user_id = self::get_user()->ID;
 
 		// Handle validate now action
@@ -171,6 +172,7 @@ class PMProEC_Member_Edit_Panel_Email_Confirmation extends PMPro_Member_Edit_Pan
 			pmproec_resend_confirmation_email( $user_id );
 			pmpro_setMessage( __( 'Confirmation email has been sent.', 'pmpro-email-confirmation' ), 'pmpro_success' );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
 	/**

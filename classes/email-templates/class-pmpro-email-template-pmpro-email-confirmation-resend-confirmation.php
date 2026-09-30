@@ -4,6 +4,11 @@
  *
  * @since 1.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class PMPro_Email_Template_PMProEC_Resend_Confirmation extends PMPro_Email_Template {
 
 	/**

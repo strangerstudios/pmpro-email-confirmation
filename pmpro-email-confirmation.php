@@ -10,6 +10,10 @@
  * Domain Path: /languages
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Sample use case: You have a free level but want people to use a real email address when signing up.	
  */
@@ -79,7 +83,7 @@ add_action( 'init', 'pmproec_init_email_templates', 8 ); // Priority 8 so the le
 */
 //show the checkbox on the edit level page
 function pmproec_pmpro_membership_level_after_other_settings() {	
-	$level_id = intval($_REQUEST['edit']);
+	$level_id = isset( $_REQUEST['edit'] ) ? intval( $_REQUEST['edit'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; selects which level's settings to display.
 	if ( $level_id > 0 ) {
 		$email_confirmation = get_option('pmproec_email_confirmation_' . $level_id);
 		$reset_email_confirmation = get_option( 'pmproec_reset_email_confirmation_' . $level_id );	
@@ -133,6 +137,7 @@ add_action( 'pmpro_membership_level_after_other_settings', 'pmproec_pmpro_member
 
 //save email_confirmation setting when the level is saved/added
 function pmproec_pmpro_save_membership_level( $level_id ) {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Core verifies the pmpro_membershiplevels_nonce and level capability before firing pmpro_save_membership_level.
 
 	if ( isset( $_REQUEST['email_confirmation'] ) ) {
 		$email_confirmation = intval($_REQUEST['email_confirmation']);
@@ -153,6 +158,7 @@ function pmproec_pmpro_save_membership_level( $level_id ) {
 
 	update_option( 'pmproec_email_confirmation_' . $level_id, $email_confirmation );
 	update_option( 'pmproec_reset_email_confirmation_' . $level_id, $reset_email_confirmation );
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 }
 
@@ -334,6 +340,7 @@ add_filter( "pmpro_email_body", "pmproec_pmpro_email_body", 10, 2 );
  * Validate the user's email confirmation.
  */
 function pmproec_init_validate() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Emailed confirmation link; authorized by hash_equals() against the user's secret confirmation key.
 	if ( ! empty( $_REQUEST['validate'] ) && ! empty( $_REQUEST['ui'] ) ) {
 		$validate = sanitize_text_field( wp_unslash( $_REQUEST['validate'] ) );
 		$ui = absint( $_REQUEST['ui'] );
@@ -345,14 +352,15 @@ function pmproec_init_validate() {
 			do_action( 'pmproec_after_validate_user', $user->ID, $validate );
 			
 			if ( is_user_logged_in() ) {		
-				wp_redirect( apply_filters( 'pmproec_logged_in_validate_redirect', home_url() ) );
+				wp_redirect( apply_filters( 'pmproec_logged_in_validate_redirect', home_url() ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Filterable destination may legitimately be offsite.
 			} else {
-				wp_redirect( apply_filters( 'pmproec_logged_out_validate_redirect', wp_login_url() ) );
+				wp_redirect( apply_filters( 'pmproec_logged_out_validate_redirect', wp_login_url() ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Filterable destination may legitimately be offsite (e.g. custom login URL).
 			}
 			
 			exit;
 		}
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 }
 add_action("init", "pmproec_init_validate");
 
@@ -557,13 +565,15 @@ function pmproec_user_row_actions( $actions, $user ) {
 		if ( ! empty( $validation_key ) && $validation_key != "validated" )	{
 			$url = admin_url( "users.php?pmproecvalidate=" . $user->ID );
 
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only; preserves the current users list search and page in the action link.
 			if ( ! empty( $_REQUEST['s'] ) ) {
-				$url .= "&s=" . esc_attr($_REQUEST['s']);
+				$url .= "&s=" . rawurlencode( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) );
 			}
 
 			if ( ! empty( $_REQUEST['paged'] ) ) {
 				$url .= "&paged=" . intval($_REQUEST['paged']);
 			}
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 			$url = wp_nonce_url( $url, 'pmproecvalidate_' . $user->ID );
 			$actions[] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Validate User', 'pmpro-email-confirmation' ) . '</a>';
@@ -728,7 +738,7 @@ add_filter("pmpro_not_logged_in_text_filter", "pmproec_pmpro_text_filter"); // P
 function pmproec_admin_notices() {
 	global $pmproec_msg, $pmproec_msgt;
 	if ( ! empty( $pmproec_msg ) ) {
-		echo "<div class='$pmproec_msgt'><p>" . esc_html( $pmproec_msg ) . "</p></div>"; 
+		echo "<div class='" . esc_attr( $pmproec_msgt ) . "'><p>" . esc_html( $pmproec_msg ) . "</p></div>"; 
 	}
 }
 add_action( 'admin_notices', 'pmproec_admin_notices' );
