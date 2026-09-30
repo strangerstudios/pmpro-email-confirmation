@@ -4,7 +4,7 @@ Contributors: strangerstudios, messica
 Tags: pmpro, paid memberships pro, email, confirmation, validate, validation, confirm, customize, member, membership, subscription, addon
 Requires at least: 3.5
 Tested up to: 7.1
-Stable tag: 1.0
+Stable tag: 1.0.1
 
 
 == Description ==
@@ -26,6 +26,11 @@ Please post it in the GitHub issue tracker here: https://github.com/strangerstud
 Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= 1.0.1 - 2026-09-30 =
+* SECURITY: Email confirmation keys are now randomly generated instead of derived from the user ID and signup time. #66 (@dparker1005)
+* SECURITY: Improved sanitization and escaping throughout the plugin to resolve Plugin Check security findings. #65 (@dparker1005)
+* BUG FIX: Fixed an undefined index notice on the edit level page when no level ID is present. #65 (@dparker1005)
+
 = 1.0 - 2026-09-15 =
 * SECURITY: The email confirmation key is now compared with a timing-safe check and the user ID is validated before use. Resending a confirmation email from the account page now requires a logged in user and a valid nonce. #62 (@flintfromthebasement)
 * FEATURE: Added an "Email Confirmation" panel to the Edit Member screen on PMPro 3.0+ showing the member's confirmation status, email address, and which of their levels require confirmation, with actions to validate the member, resend the confirmation email, require re-confirmation, or send a first confirmation email. #61 (@flintfromthebasement)
