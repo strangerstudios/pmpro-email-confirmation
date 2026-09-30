@@ -307,7 +307,7 @@ function pmproec_pmpro_email_body( $body, $email ) {
 
 		$validated = $user->pmpro_email_confirmation_key;
 
-		$url = home_url( "?ui=" . $user->ID . "&validate=" . $validated );
+		$url = home_url( "?ui=" . $user->ID . "&validate=" . rawurlencode( $validated ) );
 
 		//add a filter to allow users to add extra arguments to the validation URL.
 		$pmpro_extra_query_args = apply_filters( 'pmproec_extra_query_args', array() );
@@ -472,7 +472,7 @@ function pmproec_resend_confirmation_email( $user_id = NULL ) {
 		//filter to allow additional query arguments.
 		$pmpro_query_args = apply_filters( 'pmproec_query_args', array() );
 
-		$url = home_url( "?ui=" . $user->ID . "&validate=" . $validated );
+		$url = home_url( "?ui=" . $user->ID . "&validate=" . rawurlencode( $validated ) );
 
 		//add query arguments to the URL (on top of existing args)
 		$url = ( add_query_arg(
