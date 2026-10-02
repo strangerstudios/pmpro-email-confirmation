@@ -183,7 +183,7 @@ function pmproec_isEmailConfirmationLevel( $level_id ) {
  * @param int $user_id The user's ID.
  */
 function pmproec_getValidationKey( $user_id ) {
-	return wp_generate_password( 32, false );
+	return bin2hex( random_bytes( 16 ) );
 }
 
 /**
