@@ -4,7 +4,7 @@ Contributors: strangerstudios, messica
 Tags: pmpro, paid memberships pro, email, confirmation, validate, validation, confirm, customize, member, membership, subscription, addon
 Requires at least: 3.5
 Tested up to: 7.1
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 
 == Description ==
@@ -26,6 +26,9 @@ Please post it in the GitHub issue tracker here: https://github.com/strangerstud
 Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= 1.0.2 - 2026-10-07 =
+* BUG FIX: Fixed an issue where email confirmation links could fail to validate if another plugin filters `random_password`. #67 (@dparker1005)
+
 = 1.0.1 - 2026-09-30 =
 * SECURITY: Email confirmation keys are now randomly generated instead of derived from the user ID and signup time. #66 (@dparker1005)
 * SECURITY: Improved sanitization and escaping throughout the plugin to resolve Plugin Check security findings. #65 (@dparker1005)
