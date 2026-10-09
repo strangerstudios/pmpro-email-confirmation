@@ -263,9 +263,19 @@ function pmproec_pmpro_has_membership_level( $haslevel, $user_id, $levels ) {
 		return $haslevel;
 	}
 		
-	//if not checking for a level, ignore this
-	if ( empty( $levels ) ) {
+	//if checking for non-members, ignore this
+	if ( $levels === 0 || $levels === '0' ) {
 		return $haslevel;
+	}
+
+	//if checking for any level, check the user's levels instead
+	if ( empty( $levels ) ) {
+		// Keep showing the real levels in the admin, such as when deleting users or sending admin change emails.
+		if ( is_admin() && ! wp_doing_ajax() ) {
+			return $haslevel;
+		}
+
+		$levels = wp_list_pluck( pmpro_getMembershipLevelsForUser( $user_id ), 'id' );
 	}
 
 	// If the user is trying to cancel, let them.
@@ -672,7 +682,7 @@ function pmproec_no_access_message_header( $header ) {
 	remove_filter( 'pmpro_not_logged_in_text_filter', 'pmproec_pmpro_text_filter' );
 
 	// If a user does not have a membership level, return default text.
-	if ( ! pmpro_hasMembershipLevel() ) {
+	if ( empty( pmpro_getMembershipLevelsForUser( $current_user->ID ) ) ) {
 		return $header;
 	}
 
