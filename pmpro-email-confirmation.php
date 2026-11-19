@@ -323,12 +323,14 @@ function pmproec_pmpro_email_body( $body, $email ) {
 
 		//need validation?
 		if ( empty( $validated ) || $validated != "validated" ) {
-			//use validation_link substitute?
-			if ( false === stripos( $body, "!!validation_link!!" ) ) {
+			//use validation_link substitute? Supports both !!validation_link!! and Liquid {{ validation_link }}.
+			$validation_link_pattern = '/!!validation_link!!|\{\{\s*validation_link\s*\}\}/i';
+			if ( ! preg_match( $validation_link_pattern, $body ) ) {
 				$body = "<p><strong>" . esc_html__("IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated", "pmpro-email-confirmation") . ":<br /><a href='" . esc_url( $url ) . "'>" . esc_url( $url ) . "</a></strong></p><hr />" . $body;
 				$body = str_replace( esc_html__('Your membership account is now active', 'pmpro-email-confirmation') . '.', "", $body );
-			} else
-				$body = str_ireplace( "!!validation_link!!", $url, $body );
+			} else {
+				$body = preg_replace_callback( $validation_link_pattern, function() use ( $url ) { return $url; }, $body );
+			}
 		}
 	}
 	
