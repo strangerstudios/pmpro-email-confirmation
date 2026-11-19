@@ -11,7 +11,8 @@ class PMProEC_Member_Edit_Panel_Email_Confirmation extends PMPro_Member_Edit_Pan
 	public function __construct() {
 		$this->slug = 'email-confirmation';
 		$this->title = __( 'Email Confirmation', 'pmpro-email-confirmation' );
-		$this->submit_text = __( 'Save Changes', 'pmpro-email-confirmation' );
+		// No submit button. This panel only has action buttons, which each submit the form themselves.
+		$this->submit_text = '';
 	}
 
 	/**
