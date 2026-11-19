@@ -630,8 +630,12 @@ function pmproec_validate_user()
 			else
 			{				
 				//validate!
+				$validation_key = get_user_meta( $user_id, 'pmpro_email_confirmation_key', true );
 				update_user_meta($user_id, "pmpro_email_confirmation_key", "validated");
-				
+
+				// Fire the same hook as a confirmation link click so integrations see admin validations too.
+				do_action( 'pmproec_after_validate_user', $user_id, $validation_key );
+
 				//show success message
 				$pmproec_msg = $user->user_email . ' ' . esc_html__( 'has been validated.', 'pmpro-email-confirmation' );
 				$pmproec_msgt = 'updated';
